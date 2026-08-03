@@ -62,8 +62,7 @@ Route::post(
     Route::resource('packages', PackageController::class)
         ->except('show');
 
-    Route::resource('customers', CustomerController::class)
-        ->except('show');
+    Route::resource('customers', CustomerController::class);
 
     Route::resource('areas', AreaController::class)
         ->except('show');

@@ -10,6 +10,7 @@ class Customer extends Model
     protected $fillable = [
 
         'customer_code',
+
         'name',
         'nik',
         'phone',
@@ -23,6 +24,7 @@ class Customer extends Model
 
         'pop_id',
         'odp_id',
+
         'ont_id',
 
         'pppoe_username',
@@ -36,13 +38,85 @@ class Customer extends Model
 
     protected $casts = [
 
-        'latitude' => 'decimal:7',
+        'latitude'  => 'decimal:7',
         'longitude' => 'decimal:7',
 
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relasi
+    |--------------------------------------------------------------------------
+    */
+
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function ont(): BelongsTo
+    {
+        return $this->belongsTo(Ont::class);
+    }
+
+    public function pop(): BelongsTo
+    {
+        return $this->belongsTo(Pop::class);
+    }
+
+    public function odp(): BelongsTo
+    {
+        return $this->belongsTo(Odp::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helper
+    |--------------------------------------------------------------------------
+    */
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function isSuspend(): bool
+    {
+        return $this->status === 'suspend';
+    }
+
+    public function isTerminated(): bool
+    {
+        return $this->status === 'terminated';
+    }
+
+    public function statusText(): string
+    {
+        return match ($this->status) {
+
+            'active'      => 'Aktif',
+
+            'suspend'     => 'Suspend',
+
+            'terminated'  => 'Terminasi',
+
+            default       => '-',
+
+        };
+    }
+
+    public function badgeClass(): string
+    {
+        return match ($this->status) {
+
+            'active'      => 'success',
+
+            'suspend'     => 'warning',
+
+            'terminated'  => 'danger',
+
+            default       => 'secondary',
+
+        };
     }
 }

@@ -2,20 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CodeGenerator;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
+use App\Models\Ont;
 use App\Models\Package;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class CustomerController extends Controller
 {
     /**
      * Daftar pelanggan
      */
-    public function index()
+    public function index(): View
     {
-        $customers = Customer::with('package')
-            ->orderBy('customer_code')
-            ->get();
+        $customers = Customer::with([
+            'package',
+            'ont',
+        ])
+        ->orderBy('customer_code')
+        ->get();
 
         return view('customers.index', compact('customers'));
     }
@@ -23,122 +32,125 @@ class CustomerController extends Controller
     /**
      * Form tambah pelanggan
      */
-    public function create()
+    public function create(): View
     {
         $packages = Package::where('status', true)
             ->orderBy('name')
             ->get();
 
-        $lastId = Customer::max('id') + 1;
+        $onts = Ont::orderBy('code')->get();
 
-        $customerCode = 'CST' . str_pad($lastId, 6, '0', STR_PAD_LEFT);
+        $customerCode = CodeGenerator::generate(
+            'CST',
+            Customer::class,
+            6
+        );
 
         return view('customers.create', compact(
             'packages',
+            'onts',
             'customerCode'
         ));
     }
 
     /**
-     * Simpan pelanggan baru
+     * Simpan pelanggan
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
+        DB::transaction(function () use ($request) {
 
-            'customer_code' => 'required|unique:customers',
+            Customer::create(
+                $request->validated()
+            );
 
-            'package_id' => 'nullable|exists:packages,id',
-
-            'name' => 'required|string|max:100',
-            'nik' => 'nullable|string|max:30',
-
-            'phone' => 'nullable|string|max:30',
-            'email' => 'nullable|email',
-
-            'address' => 'nullable|string',
-
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-
-            'pppoe_username' => 'nullable|string|max:100',
-            'pppoe_password' => 'nullable|string|max:100',
-
-            'serial_number' => 'nullable|string|max:100',
-
-            'status' => 'required',
-
-        ]);
-
-        Customer::create($validated);
+        });
 
         return redirect()
             ->route('customers.index')
-            ->with('success', 'Pelanggan berhasil ditambahkan.');
+            ->with(
+                'success',
+                'Pelanggan berhasil ditambahkan.'
+            );
     }
 
     /**
-     * Form edit pelanggan
+     * Detail pelanggan
      */
-    public function edit(Customer $customer)
+    public function show(Customer $customer): View
+    {
+        $customer->load([
+            'package',
+            'ont',
+            'pop',
+            'odp',
+        ]);
+
+        return view(
+            'customers.show',
+            compact('customer')
+        );
+    }
+
+    /**
+     * Form edit
+     */
+    public function edit(Customer $customer): View
     {
         $packages = Package::where('status', true)
             ->orderBy('name')
             ->get();
 
+        $onts = Ont::orderBy('code')->get();
+
         return view('customers.edit', compact(
             'customer',
-            'packages'
+            'packages',
+            'onts'
         ));
     }
 
     /**
      * Update pelanggan
      */
-    public function update(Request $request, Customer $customer)
+    public function update(
+        UpdateCustomerRequest $request,
+        Customer $customer
+    ): RedirectResponse
     {
-        $validated = $request->validate([
+        DB::transaction(function () use (
+            $request,
+            $customer
+        ) {
 
-            'customer_code' => 'required|unique:customers,customer_code,' . $customer->id,
+            $customer->update(
+                $request->validated()
+            );
 
-            'package_id' => 'nullable|exists:packages,id',
-
-            'name' => 'required|string|max:100',
-            'nik' => 'nullable|string|max:30',
-
-            'phone' => 'nullable|string|max:30',
-            'email' => 'nullable|email',
-
-            'address' => 'nullable|string',
-
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-
-            'pppoe_username' => 'nullable|string|max:100',
-            'pppoe_password' => 'nullable|string|max:100',
-
-            'serial_number' => 'nullable|string|max:100',
-
-            'status' => 'required',
-
-        ]);
-
-        $customer->update($validated);
+        });
 
         return redirect()
             ->route('customers.index')
-            ->with('success', 'Pelanggan berhasil diperbarui.');
+            ->with(
+                'success',
+                'Pelanggan berhasil diperbarui.'
+            );
     }
 
     /**
      * Hapus pelanggan
      */
-    public function destroy(Customer $customer)
+    public function destroy(
+        Customer $customer
+    ): RedirectResponse
     {
         $customer->delete();
 
         return redirect()
             ->route('customers.index')
-            ->with('success', 'Pelanggan berhasil dihapus.');
+            ->with(
+                'success',
+                'Pelanggan berhasil dihapus.'
+            );
     }
 }
