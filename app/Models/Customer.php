@@ -68,7 +68,34 @@ class Customer extends Model
     {
         return $this->belongsTo(Odp::class);
     }
+        /*
+    |--------------------------------------------------------------------------
+    | Fiber Path
+    |--------------------------------------------------------------------------
+    */
 
+    public function area(): ?Area
+    {
+        return $this->ont
+            ?->splitterPort
+            ?->splitter
+            ?->odp
+            ?->pop
+            ?->area;
+    }
+
+    public function splitter()
+    {
+        return $this->ont
+            ?->splitterPort
+            ?->splitter;
+    }
+
+    public function splitterPort()
+    {
+        return $this->ont
+            ?->splitterPort;
+    }
     /*
     |--------------------------------------------------------------------------
     | Helper

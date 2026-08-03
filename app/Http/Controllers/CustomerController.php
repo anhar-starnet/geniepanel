@@ -78,19 +78,30 @@ class CustomerController extends Controller
      * Detail pelanggan
      */
     public function show(Customer $customer): View
-    {
-        $customer->load([
-            'package',
-            'ont',
-            'pop',
-            'odp',
-        ]);
+{
+    $customer->load([
 
-        return view(
-            'customers.show',
-            compact('customer')
-        );
-    }
+        'package',
+
+        'ont',
+
+        'ont.splitterPort',
+
+        'ont.splitterPort.splitter',
+
+        'ont.splitterPort.splitter.odp',
+
+        'ont.splitterPort.splitter.odp.pop',
+
+        'ont.splitterPort.splitter.odp.pop.area',
+
+    ]);
+
+    return view(
+        'customers.show',
+        compact('customer')
+    );
+}
 
     /**
      * Form edit

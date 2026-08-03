@@ -183,6 +183,14 @@
 
 <div class="mt-3">
 
+    <a href="{{ route('customers.activate', $customer) }}"
+   class="btn btn-primary">
+
+    <i class="fas fa-play-circle"></i>
+
+    Aktivasi
+
+</a>
     <a href="{{ route('customers.edit', $customer) }}"
        class="btn btn-warning">
 

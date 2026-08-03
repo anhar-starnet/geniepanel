@@ -13,6 +13,17 @@ use App\Http\Controllers\SplitterController;
 use App\Http\Controllers\SplitterPortController;
 use App\Http\Controllers\OntController;
 use App\Http\Controllers\OntDeploymentController;
+use App\Http\Controllers\CustomerActivationController;
+
+Route::get(
+    'customers/{customer}/activate',
+    [CustomerActivationController::class, 'create']
+)->name('customers.activate');
+
+Route::post(
+    'customers/{customer}/activate',
+    [CustomerActivationController::class, 'store']
+)->name('customers.activate.store');
 
 Route::get('/', function () {
     return redirect('/login');
