@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SplitterPort extends Model
 {
@@ -14,8 +15,6 @@ class SplitterPort extends Model
         'port_number',
 
         'status',
-
-        'ont_id',
 
     ];
 
@@ -29,11 +28,10 @@ class SplitterPort extends Model
 
     /**
      * Relasi ke ONT
-     * (akan digunakan pada Sprint 4)
      */
-    public function ont(): BelongsTo
+    public function ont(): HasOne
     {
-        return $this->belongsTo(Ont::class);
+        return $this->hasOne(Ont::class);
     }
 
     /*
@@ -71,34 +69,22 @@ class SplitterPort extends Model
     public function statusText(): string
     {
         return match ($this->status) {
-
             'FREE'      => 'Kosong',
-
             'USED'      => 'Terpakai',
-
             'RESERVED'  => 'Dicadangkan',
-
             'BROKEN'    => 'Rusak',
-
             default     => '-',
-
         };
     }
 
     public function badgeClass(): string
     {
         return match ($this->status) {
-
             'FREE'      => 'success',
-
             'USED'      => 'primary',
-
             'RESERVED'  => 'warning',
-
             'BROKEN'    => 'danger',
-
             default     => 'secondary',
-
         };
     }
 }

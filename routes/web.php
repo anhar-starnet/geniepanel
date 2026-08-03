@@ -11,6 +11,7 @@ use App\Http\Controllers\PopController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SplitterController;
 use App\Http\Controllers\SplitterPortController;
+use App\Http\Controllers\OntController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -59,6 +60,7 @@ Route::middleware('auth')->group(function () {
         ->except('show');
 
     Route::resource('splitters', SplitterController::class);
+    Route::resource('onts', OntController::class);
 
     /*
     |--------------------------------------------------------------------------
