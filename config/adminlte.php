@@ -353,13 +353,13 @@ return [
 
     [
         'text' => 'ODP',
-        'url'  => '#',
+        'url'  => 'odps',
         'icon' => 'fas fa-project-diagram',
     ],
 
     [
         'text' => 'ONT',
-        'url'  => '#',
+        'url'  => 'onts',
         'icon' => 'fas fa-broadcast-tower',
     ],
 
