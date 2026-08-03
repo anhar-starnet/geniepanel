@@ -356,6 +356,11 @@ return [
         'url'  => 'odps',
         'icon' => 'fas fa-project-diagram',
     ],
+    [
+        'text' => 'Splitter',
+        'url'  => 'splitters',
+        'icon' => 'fas fa-code-branch',
+    ],
 
     [
         'text' => 'ONT',

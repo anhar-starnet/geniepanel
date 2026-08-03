@@ -9,6 +9,8 @@ use App\Http\Controllers\OdpController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PopController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SplitterController;
+use App\Http\Controllers\SplitterPortController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -56,6 +58,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('odps', OdpController::class)
         ->except('show');
 
+    Route::resource('splitters', SplitterController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Splitter Port
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        'splitter-ports/{splitterPort}',
+        [SplitterPortController::class, 'show']
+    )->name('splitter-ports.show');
 });
 
 require __DIR__.'/auth.php';
