@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\Pop;
-use Illuminate\Http\Request;
+use App\Http\Requests\StorePopRequest;
+use App\Http\Requests\UpdatePopRequest;
 
 class PopController extends Controller
 {
+    /**
+     * Daftar POP
+     */
     public function index()
     {
         $pops = Pop::with('area')
@@ -17,6 +21,9 @@ class PopController extends Controller
         return view('pops.index', compact('pops'));
     }
 
+    /**
+     * Form tambah POP
+     */
     public function create()
     {
         $areas = Area::where('status', true)
@@ -33,29 +40,21 @@ class PopController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    /**
+     * Simpan POP
+     */
+    public function store(StorePopRequest $request)
     {
-        $validated = $request->validate([
-            'area_id'        => 'required|exists:areas,id',
-            'code'           => 'required|unique:pops',
-            'name'           => 'required|max:100',
-            'mikrotik_name'  => 'nullable|max:100',
-            'olt_name'       => 'nullable|max:100',
-            'ip_address'     => 'nullable|ip',
-            'address'        => 'nullable',
-            'latitude'       => 'nullable|numeric',
-            'longitude'      => 'nullable|numeric',
-            'description'    => 'nullable',
-            'status'         => 'required|boolean',
-        ]);
-
-        Pop::create($validated);
+        Pop::create($request->validated());
 
         return redirect()
             ->route('pops.index')
             ->with('success', 'POP berhasil ditambahkan.');
     }
 
+    /**
+     * Form edit POP
+     */
     public function edit(Pop $pop)
     {
         $areas = Area::where('status', true)
@@ -68,29 +67,21 @@ class PopController extends Controller
         ));
     }
 
-    public function update(Request $request, Pop $pop)
+    /**
+     * Update POP
+     */
+    public function update(UpdatePopRequest $request, Pop $pop)
     {
-        $validated = $request->validate([
-            'area_id'        => 'required|exists:areas,id',
-            'code'           => 'required|unique:pops,code,' . $pop->id,
-            'name'           => 'required|max:100',
-            'mikrotik_name'  => 'nullable|max:100',
-            'olt_name'       => 'nullable|max:100',
-            'ip_address'     => 'nullable|ip',
-            'address'        => 'nullable',
-            'latitude'       => 'nullable|numeric',
-            'longitude'      => 'nullable|numeric',
-            'description'    => 'nullable',
-            'status'         => 'required|boolean',
-        ]);
-
-        $pop->update($validated);
+        $pop->update($request->validated());
 
         return redirect()
             ->route('pops.index')
             ->with('success', 'POP berhasil diperbarui.');
     }
 
+    /**
+     * Hapus POP
+     */
     public function destroy(Pop $pop)
     {
         $pop->delete();
