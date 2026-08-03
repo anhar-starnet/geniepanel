@@ -13,32 +13,25 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('area_id')
-                ->constrained('areas')
+                ->constrained()
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->string('code',20)->unique();
+            $table->string('code', 20)->unique();
 
-            $table->string('name',100);
-
-            $table->string('mikrotik_name',100)->nullable();
-
-            $table->string('olt_name',100)->nullable();
-
-            $table->string('ip_address',45)->nullable();
+            $table->string('name', 100);
 
             $table->text('address')->nullable();
 
-            $table->decimal('latitude',10,7)->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
 
-            $table->decimal('longitude',10,7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
 
             $table->text('description')->nullable();
 
             $table->boolean('status')->default(true);
 
             $table->timestamps();
-
         });
     }
 
