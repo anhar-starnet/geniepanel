@@ -99,23 +99,50 @@
 
                     <td>
 
-                        @if($ont->splitterPort)
+                        <td>
 
-                            {{ $ont->splitterPort->splitter->code }}
+    <a href="{{ route('onts.show', $ont) }}"
+       class="btn btn-info btn-sm">
+        Detail
+    </a>
 
-                            /
+    @if($ont->splitter_port_id)
 
-                            Port {{ $ont->splitterPort->port_number }}
+        <form action="{{ route('onts.release', $ont) }}"
+              method="POST"
+              style="display:inline;">
 
-                        @else
+            @csrf
 
-                            <span class="badge badge-secondary">
+            <button
+                class="btn btn-danger btn-sm"
+                onclick="return confirm('Lepaskan ONT dari port?')">
 
-                                Gudang
+                Lepaskan
 
-                            </span>
+            </button>
 
-                        @endif
+        </form>
+
+    @else
+
+        <a href="{{ route('onts.deploy', $ont) }}"
+           class="btn btn-success btn-sm">
+
+            Deploy
+
+        </a>
+
+    @endif
+
+    <a href="{{ route('onts.edit', $ont) }}"
+       class="btn btn-warning btn-sm">
+
+        Ubah
+
+    </a>
+
+</td>
 
                     </td>
 

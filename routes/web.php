@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SplitterController;
 use App\Http\Controllers\SplitterPortController;
 use App\Http\Controllers\OntController;
+use App\Http\Controllers\OntDeploymentController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -37,6 +38,20 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+    Route::get(
+    'onts/{ont}/deploy',
+    [OntDeploymentController::class, 'create']
+)->name('onts.deploy');
+
+Route::post(
+    'onts/{ont}/deploy',
+    [OntDeploymentController::class, 'store']
+)->name('onts.deploy.store');
+
+Route::post(
+    'onts/{ont}/release',
+    [OntDeploymentController::class, 'release']
+)->name('onts.release');   
 
     /*
     |--------------------------------------------------------------------------

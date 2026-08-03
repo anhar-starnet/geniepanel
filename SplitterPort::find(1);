@@ -1,0 +1,14 @@
+[90m= [39m[34;4mApp\Models\Ont[39;24m {#8704
+    [34mid[39m: [35m1[39m,
+    [34msplitter_port_id[39m: [35m1[39m,
+    [34mcode[39m: [32m"[39m[32mONT0001[39m[32m"[39m,
+    [34mvendor[39m: [32m"[39m[32mhuawei[39m[32m"[39m,
+    [34mmodel[39m: [32m"[39m[32m5v5[39m[32m"[39m,
+    [34mserial_number[39m: [32m"[39m[32m3423543534563465[39m[32m"[39m,
+    [34mfirmware[39m: [36mnull[39m,
+    [34mgenieacs_device_id[39m: [36mnull[39m,
+    [34mstatus[39m: [35m1[39m,
+    [34mnotes[39m: [32m"[39m[32mdsfsdf[39m[32m"[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-08-03 07:50:13[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-08-03 08:05:28[39m[32m"[39m,
+  }
