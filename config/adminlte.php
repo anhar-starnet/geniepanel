@@ -14,9 +14,9 @@ return [
     |
     */
 
-    'title' => 'GeniePanel',
+    'title' => 'AdminLTE 3',
     'title_prefix' => '',
-    'title_postfix' => ' 2',
+    'title_postfix' => '',
 
     /*
     |--------------------------------------------------------------------------
@@ -214,7 +214,7 @@ return [
     |
     */
 
-    'sidebar_mini' => false,
+    'sidebar_mini' => 'lg',
     'sidebar_collapse' => false,
     'sidebar_collapse_auto_size' => false,
     'sidebar_collapse_remember' => false,
@@ -298,34 +298,57 @@ return [
     |
     */
 
-'menu' => [
+    'menu' => [
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOP NAVBAR
+    |--------------------------------------------------------------------------
+    */
+
+    [
+        'type' => 'fullscreen-widget',
+        'topnav_right' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SIDEBAR
+    |--------------------------------------------------------------------------
+    */
 
     [
         'text' => 'Dashboard',
-        'url'  => '/dashboard',
+        'url'  => 'dashboard',
         'icon' => 'fas fa-home',
     ],
 
     [
-        'header' => 'ISP MANAGEMENT',
+        'header' => 'MASTER DATA',
     ],
 
     [
         'text' => 'Pelanggan',
-        'url'  => '#',
+        'url'  => 'customers',
         'icon' => 'fas fa-users',
     ],
 
     [
-        'text' => 'GenieACS',
-        'url'  => '#',
-        'icon' => 'fas fa-network-wired',
+        'text' => 'Paket Internet',
+        'url'  => 'packages',
+        'icon' => 'fas fa-wifi',
     ],
 
     [
-        'text' => 'Splynx',
-        'url'  => '#',
-        'icon' => 'fas fa-server',
+        'text' => 'Area',
+        'url'  => 'areas',
+        'icon' => 'fas fa-map-marked-alt',
+    ],
+
+    [
+        'text' => 'POP',
+        'url'  => 'pops',
+        'icon' => 'fas fa-network-wired',
     ],
 
     [
@@ -337,11 +360,47 @@ return [
     [
         'text' => 'ONT',
         'url'  => '#',
-        'icon' => 'fas fa-wifi',
+        'icon' => 'fas fa-broadcast-tower',
     ],
 
     [
-        'text' => 'Monitoring',
+        'header' => 'PROVISIONING',
+    ],
+
+    [
+        'text' => 'GenieACS',
+        'url'  => '#',
+        'icon' => 'fas fa-server',
+    ],
+
+    [
+        'text' => 'MikroTik',
+        'url'  => '#',
+        'icon' => 'fas fa-router',
+    ],
+
+    [
+        'header' => 'BILLING',
+    ],
+
+    [
+        'text' => 'Invoice',
+        'url'  => '#',
+        'icon' => 'fas fa-file-invoice',
+    ],
+
+    [
+        'text' => 'Pembayaran',
+        'url'  => '#',
+        'icon' => 'fas fa-money-bill-wave',
+    ],
+
+    [
+        'header' => 'MONITORING',
+    ],
+
+    [
+        'text' => 'Dashboard NOC',
         'url'  => '#',
         'icon' => 'fas fa-chart-line',
     ],
@@ -353,15 +412,7 @@ return [
     ],
 
     [
-        'text' => 'Ticket',
-        'url'  => '#',
-        'icon' => 'fas fa-ticket-alt',
-    ],
-
-    [
-        'text' => 'Laporan',
-        'url'  => '#',
-        'icon' => 'fas fa-file-alt',
+        'header' => 'SYSTEM',
     ],
 
     [
