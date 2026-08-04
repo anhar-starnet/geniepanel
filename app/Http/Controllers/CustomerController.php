@@ -17,13 +17,51 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use App\Services\GenieACS\GenieACSClient;
 
 class CustomerController extends Controller
 {
     public function __construct(
     protected DeviceProvisioning $deviceProvisioning,
-    protected DeviceLive $deviceLive
+    protected DeviceLive $deviceLive,
+    protected GenieACSClient $genieacs
 ) {
+}
+
+    /**
+ * Refresh parameter ONT dari GenieACS.
+ */
+public function refresh(
+    Customer $customer
+): RedirectResponse {
+
+    if (!$customer->ont) {
+
+        return back()->with(
+            'error',
+            'Customer belum memiliki ONT.'
+        );
+
+    }
+
+    if (!$customer->ont->genieacs_device_id) {
+
+        return back()->with(
+            'error',
+            'ONT belum terhubung ke GenieACS.'
+        );
+
+    }
+
+    $this->genieacs->refresh(
+        $customer->ont->genieacs_device_id
+    );
+
+    return back()->with(
+        'success',
+        'Refresh task berhasil dikirim ke GenieACS.'
+    );
+
 }
 
     /**
@@ -173,7 +211,6 @@ return view(
                 'Pelanggan berhasil diperbarui.'
             );
     }
-
     /**
      * Hapus pelanggan
      */

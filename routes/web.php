@@ -119,6 +119,10 @@ Route::post(
     'customers/{customer}/assign-ont',
     [CustomerOntController::class, 'store']
 )->name('customers.assign-ont.store');
+    Route::post(
+    'customers/{customer}/refresh',
+    [CustomerController::class, 'refresh']
+)->name('customers.refresh');
 
     Route::resource('customers', CustomerController::class);
 
