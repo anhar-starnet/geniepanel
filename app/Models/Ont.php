@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Ont extends Model
 {
@@ -37,7 +38,7 @@ class Ont extends Model
     ];
 
     /**
-     * Relasi ke Port Splitter
+     * Relasi ke Port Splitter.
      */
     public function splitterPort(): BelongsTo
     {
@@ -45,7 +46,15 @@ class Ont extends Model
     }
 
     /**
-     * Scope ONT aktif
+     * Relasi ke Customer.
+     */
+    public function customer(): HasOne
+    {
+        return $this->hasOne(Customer::class);
+    }
+
+    /**
+     * Scope ONT aktif.
      */
     public function scopeActive(Builder $query): Builder
     {
@@ -53,10 +62,68 @@ class Ont extends Model
     }
 
     /**
-     * Nama tampilan ONT
+     * Nama perangkat.
      */
     public function displayName(): string
     {
-        return "{$this->vendor} {$this->model}";
+        return trim(
+            "{$this->vendor} {$this->model}"
+        );
+    }
+
+    /**
+     * Sudah dipasang ke splitter?
+     */
+    public function isDeployed(): bool
+    {
+        return !is_null($this->splitter_port_id);
+    }
+
+    /**
+     * Sudah dipakai customer?
+     */
+    public function isAssigned(): bool
+    {
+        return $this->customer()->exists();
+    }
+
+    /**
+     * Badge Deploy.
+     */
+    public function deploymentBadge(): string
+    {
+        return $this->isDeployed()
+            ? 'primary'
+            : 'secondary';
+    }
+
+    /**
+     * Text Deploy.
+     */
+    public function deploymentText(): string
+    {
+        return $this->isDeployed()
+            ? 'DEPLOYED'
+            : 'STOCK';
+    }
+
+    /**
+     * Badge Status.
+     */
+    public function statusBadge(): string
+    {
+        return $this->status
+            ? 'success'
+            : 'danger';
+    }
+
+    /**
+     * Text Status.
+     */
+    public function statusText(): string
+    {
+        return $this->status
+            ? 'Aktif'
+            : 'Nonaktif';
     }
 }

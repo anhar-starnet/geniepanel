@@ -69,6 +69,18 @@ public function all(): Collection
                 $device->serialNumber === $serial
         );
     }
+    /**
+ * Cari device berdasarkan GenieACS Device ID.
+ */
+public function findById(
+    string $deviceId
+): ?DeviceDTO {
+
+    return $this->all()->first(
+        fn (DeviceDTO $device) =>
+            $device->id === $deviceId
+    );
+}
 
     /**
      * Cari device berdasarkan username PPPoE.

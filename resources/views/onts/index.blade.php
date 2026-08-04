@@ -4,9 +4,12 @@
 
 @section('content_header')
 
-<div class="d-flex justify-content-between">
+<div class="d-flex justify-content-between align-items-center">
 
-    <h1>Inventory ONT</h1>
+    <h1>
+        <i class="fas fa-network-wired mr-2"></i>
+        Inventory ONT
+    </h1>
 
     <a href="{{ route('onts.create') }}"
        class="btn btn-primary">
@@ -63,25 +66,29 @@
 
     <div class="card-body table-responsive p-0">
 
-        <table class="table table-hover">
+        <table class="table table-hover table-striped">
 
             <thead>
 
-                <tr>
+            <tr>
 
-                    <th>Kode</th>
+                <th>Kode</th>
 
-                    <th>Perangkat</th>
+                <th>Perangkat</th>
 
-                    <th>Serial Number</th>
+                <th>Serial Number</th>
 
-                    <th>Lokasi</th>
+                <th>Fiber Path</th>
 
-                    <th>Status</th>
+                <th>Deploy</th>
 
-                    <th width="150">Aksi</th>
+                <th>Status</th>
 
-                </tr>
+                <th>Customer</th>
+
+                <th width="230">Aksi</th>
+
+            </tr>
 
             </thead>
 
@@ -91,76 +98,59 @@
 
                 <tr>
 
-                    <td>{{ $ont->code }}</td>
-
-                    <td>{{ $ont->displayName() }}</td>
-
-                    <td>{{ $ont->serial_number }}</td>
-
                     <td>
 
-                        <td>
-
-    <a href="{{ route('onts.show', $ont) }}"
-       class="btn btn-info btn-sm">
-        Detail
-    </a>
-
-    @if($ont->splitter_port_id)
-
-        <form action="{{ route('onts.release', $ont) }}"
-              method="POST"
-              style="display:inline;">
-
-            @csrf
-
-            <button
-                class="btn btn-danger btn-sm"
-                onclick="return confirm('Lepaskan ONT dari port?')">
-
-                Lepaskan
-
-            </button>
-
-        </form>
-
-    @else
-
-        <a href="{{ route('onts.deploy', $ont) }}"
-           class="btn btn-success btn-sm">
-
-            Deploy
-
-        </a>
-
-    @endif
-
-    <a href="{{ route('onts.edit', $ont) }}"
-       class="btn btn-warning btn-sm">
-
-        Ubah
-
-    </a>
-
-</td>
+                        <strong>{{ $ont->code }}</strong>
 
                     </td>
 
                     <td>
 
-                        @if($ont->status)
+                        {{ $ont->displayName() }}
 
-                            <span class="badge badge-success">
+                    </td>
 
-                                Aktif
+                    <td>
 
-                            </span>
+                        <code>
+
+                            {{ $ont->serial_number ?: '-' }}
+
+                        </code>
+
+                    </td>
+
+                    <td>
+
+                        @if($ont->splitterPort)
+
+                            <small>
+
+                                {{ $ont->splitterPort->splitter?->odp?->pop?->area?->name ?? '-' }}
+
+                                <br>
+
+                                {{ $ont->splitterPort->splitter?->odp?->pop?->name ?? '-' }}
+
+                                <br>
+
+                                {{ $ont->splitterPort->splitter?->odp?->name ?? '-' }}
+
+                                <br>
+
+                                {{ $ont->splitterPort->splitter?->name ?? '-' }}
+
+                                /
+
+                                Port {{ $ont->splitterPort->port_number }}
+
+                            </small>
 
                         @else
 
-                            <span class="badge badge-danger">
+                            <span class="text-muted">
 
-                                Nonaktif
+                                Belum Deploy
 
                             </span>
 
@@ -170,19 +160,91 @@
 
                     <td>
 
-                        <a href="{{ route('onts.show', $ont) }}"
+                        <span class="badge badge-{{ $ont->deploymentBadge() }}">
+
+                            {{ $ont->deploymentText() }}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge badge-{{ $ont->statusBadge() }}">
+
+                            {{ $ont->statusText() }}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        @if($ont->customer)
+
+                            <a href="{{ route('customers.show',$ont->customer) }}">
+
+                                {{ $ont->customer->name }}
+
+                            </a>
+
+                        @else
+
+                            <span class="text-muted">
+
+                                -
+
+                            </span>
+
+                        @endif
+
+                    </td>
+
+                    <td>
+
+                        <a href="{{ route('onts.show',$ont) }}"
                            class="btn btn-info btn-sm">
 
-                            Detail
+                            <i class="fas fa-eye"></i>
 
                         </a>
 
-                        <a href="{{ route('onts.edit', $ont) }}"
+                        <a href="{{ route('onts.edit',$ont) }}"
                            class="btn btn-warning btn-sm">
 
-                            Ubah
+                            <i class="fas fa-edit"></i>
 
                         </a>
+
+                        @if($ont->isDeployed())
+
+                            <form
+                                action="{{ route('onts.release',$ont) }}"
+                                method="POST"
+                                class="d-inline">
+
+                                @csrf
+
+                                <button
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Lepaskan ONT dari Splitter?')">
+
+                                    <i class="fas fa-unlink"></i>
+
+                                </button>
+
+                            </form>
+
+                        @else
+
+                            <a href="{{ route('onts.deploy',$ont) }}"
+                               class="btn btn-success btn-sm">
+
+                                <i class="fas fa-link"></i>
+
+                            </a>
+
+                        @endif
 
                     </td>
 
@@ -192,9 +254,9 @@
 
                 <tr>
 
-                    <td colspan="6" class="text-center">
+                    <td colspan="8" class="text-center text-muted">
 
-                        Belum ada data ONT.
+                        Belum ada Inventory ONT.
 
                     </td>
 

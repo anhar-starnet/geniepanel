@@ -14,6 +14,7 @@ use App\Http\Controllers\SplitterPortController;
 use App\Http\Controllers\OntController;
 use App\Http\Controllers\OntDeploymentController;
 use App\Http\Controllers\CustomerActivationController;
+use App\Http\Controllers\CustomerOntController;
 /*
 |--------------------------------------------------------------------------
 | GenieACS
@@ -109,6 +110,15 @@ Route::post(
 
     Route::resource('packages', PackageController::class)
         ->except('show');
+    Route::get(
+    'customers/{customer}/assign-ont',
+    [CustomerOntController::class, 'create']
+)->name('customers.assign-ont');
+
+Route::post(
+    'customers/{customer}/assign-ont',
+    [CustomerOntController::class, 'store']
+)->name('customers.assign-ont.store');
 
     Route::resource('customers', CustomerController::class);
 

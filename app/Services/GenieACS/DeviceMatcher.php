@@ -132,6 +132,16 @@ class DeviceMatcher
 
             ->values();
     }
+    /**
+ * Cari device berdasarkan GenieACS Device ID.
+ */
+public function byId(
+    string $deviceId
+): ?DeviceDTO {
+
+    return $this->repository
+        ->findById($deviceId);
+}
 
     /**
      * Cari device berdasarkan serial.

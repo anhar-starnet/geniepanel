@@ -603,7 +603,6 @@
         Edit
 
     </a>
-
     @if($customer->ont)
 
     <a href="{{ route('onts.show', $customer->ont) }}"
@@ -615,7 +614,27 @@
 
     </a>
 
-    @endif
+    <a href="{{ route('customers.assign-ont', $customer) }}"
+       class="btn btn-warning">
+
+        <i class="fas fa-exchange-alt"></i>
+
+        Ganti ONT
+
+    </a>
+
+@else
+
+    <a href="{{ route('customers.assign-ont', $customer) }}"
+       class="btn btn-primary">
+
+        <i class="fas fa-link"></i>
+
+        Assign ONT
+
+    </a>
+
+@endif
 
     {{-- Suspend --}}
     @if($customer->status === 'active')
