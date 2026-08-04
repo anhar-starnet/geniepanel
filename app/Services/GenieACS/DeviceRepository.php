@@ -14,155 +14,162 @@ class DeviceRepository
     }
 
     /**
-     * Ambil seluruh device dari GenieACS
-     * Disimpan cache selama 60 detik.
+ * Ambil seluruh device dari GenieACS.
+ */
+public function all(): Collection
+{
+    return collect(
+        $this->client->devices()
+    );
+}
+
+    /**
+     * Ambil index customer berdasarkan PPPoE Username.
      */
-    public function all(): Collection
+    private function customerIndex(): Collection
+{
+    return Customer::query()
+        ->select([
+            'id',
+            'name',
+            'customer_code',
+            'pppoe_username',
+            'status',
+            'ont_id',
+        ])
+        ->get()
+        ->keyBy('pppoe_username');
+}
+
+    /**
+     * Match device dengan customer.
+     */
+    private function mapDevice(DeviceDTO $device): object
     {
-        return Cache::remember(
-            'genieacs.devices',
-            now()->addSeconds(60),
-            function () {
-
-                return collect(
-                    $this->client->devices()
-                );
-
-            }
+        $customer = $this->customerIndex()->get(
+            $device->pppoeUsername
         );
+
+        return (object) [
+            'device' => $device,
+            'customer' => $customer,
+            'assigned' => $customer !== null,
+        ];
     }
 
     /**
-     * Device berdasarkan Serial Number
+     * Cari device berdasarkan serial number.
      */
     public function findBySerial(
         string $serial
     ): ?DeviceDTO {
 
-        return $this->all()
-
-            ->first(
-                fn ($device) =>
-                    $device->serialNumber === $serial
-            );
-
+        return $this->all()->first(
+            fn (DeviceDTO $device) =>
+                $device->serialNumber === $serial
+        );
     }
 
     /**
-     * Device berdasarkan Username PPPoE
+     * Cari device berdasarkan username PPPoE.
      */
     public function findByPPPoE(
         string $username
     ): ?DeviceDTO {
 
-        return $this->all()
-
-            ->first(
-                fn ($device) =>
-                    $device->pppoeUsername === $username
-            );
-
+        return $this->all()->first(
+            fn (DeviceDTO $device) =>
+                $device->pppoeUsername === $username
+        );
     }
 
     /**
-     * Device yang sudah mempunyai customer
+     * Seluruh device yang sudah mempunyai customer.
      */
     public function assigned(): Collection
     {
         return $this->all()
-
-            ->map(function ($device) {
-
-                $customer = Customer::where(
-                    'pppoe_username',
-                    $device->pppoeUsername
-                )->first();
-
-                return (object) [
-
-                    'device' => $device,
-
-                    'customer' => $customer,
-
-                    'assigned' => $customer !== null,
-
-                ];
-
-            })
-
+            ->map(
+                fn (DeviceDTO $device) =>
+                    $this->mapDevice($device)
+            )
             ->filter(
                 fn ($row) => $row->assigned
             )
-
             ->values();
     }
 
     /**
-     * Device yang belum mempunyai customer
+     * Seluruh device yang belum mempunyai customer.
      */
     public function unassigned(): Collection
     {
         return $this->all()
-
-            ->map(function ($device) {
-
-                $customer = Customer::where(
-                    'pppoe_username',
-                    $device->pppoeUsername
-                )->first();
-
-                return (object) [
-
-                    'device' => $device,
-
-                    'customer' => $customer,
-
-                    'assigned' => $customer !== null,
-
-                ];
-
-            })
-
+            ->map(
+                fn (DeviceDTO $device) =>
+                    $this->mapDevice($device)
+            )
             ->reject(
                 fn ($row) => $row->assigned
             )
-
             ->values();
     }
 
     /**
-     * Statistik Dashboard
+     * Semua device beserta status assignment.
+     */
+    public function matched(): Collection
+    {
+        return $this->all()
+            ->map(
+                fn (DeviceDTO $device) =>
+                    $this->mapDevice($device)
+            )
+            ->values();
+    }
+
+    /**
+     * Statistik dashboard.
      */
     public function statistics(): array
     {
-        $devices = $this->all();
+        $matched = $this->matched();
 
         return [
 
-            'total' => $devices->count(),
+            'total' => $matched->count(),
 
-            'online' => $devices->filter(
-                fn ($d) => $d->isOnline()
-            )->count(),
+            'online' => $matched
+                ->filter(
+                    fn ($row) =>
+                        $row->device->isOnline()
+                )
+                ->count(),
 
-            'offline' => $devices->reject(
-                fn ($d) => $d->isOnline()
-            )->count(),
+            'offline' => $matched
+                ->reject(
+                    fn ($row) =>
+                        $row->device->isOnline()
+                )
+                ->count(),
 
-            'assigned' => $this->assigned()->count(),
+            'assigned' => $matched
+                ->where('assigned', true)
+                ->count(),
 
-            'unassigned' => $this->unassigned()->count(),
+            'unassigned' => $matched
+                ->where('assigned', false)
+                ->count(),
 
         ];
     }
 
     /**
-     * Hapus cache manual
+     * Hapus seluruh cache GenieACS.
      */
     public function clearCache(): void
     {
-        Cache::forget(
-            'genieacs.devices'
-        );
+        Cache::forget('genieacs.devices');
+        Cache::forget('genieacs.customer.index');
     }
 }

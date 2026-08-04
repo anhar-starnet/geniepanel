@@ -3,46 +3,66 @@
 namespace App\Http\Controllers\GenieACS;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
-use App\Services\GenieACS\GenieACSClient;
+use App\Services\GenieACS\DeviceMatcher;
+use App\Services\GenieACS\DeviceRepository;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DeviceController extends Controller
 {
     public function __construct(
-        protected GenieACSClient $genieACS
+        protected DeviceRepository $repository,
+        protected DeviceMatcher $matcher
     ) {
     }
 
     /**
-     * Daftar Device dari GenieACS
+     * Daftar seluruh device.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $devices = collect(
-            $this->genieACS->devices()
-        )->map(function ($device) {
+        $filter = $request->string('filter')->toString();
 
-            $customer = Customer::where(
-                'pppoe_username',
-                $device->pppoeUsername
-            )->first();
+        $devices = match ($filter) {
 
-            return (object) [
+            'assigned' => $this->matcher->assigned(),
 
-                'device' => $device,
+            'unassigned' => $this->matcher->unassigned(),
 
-                'customer' => $customer,
+            default => $this->matcher->all(),
 
-                'assigned' => $customer !== null,
-
-            ];
-
-        });
+        };
 
         return view(
             'genieacs.devices.index',
-            compact('devices')
+            [
+                'devices' => $devices,
+                'statistics' => $this->matcher->statistics(),
+                'filter' => $filter,
+            ]
+        );
+    }
+
+    /**
+     * Detail device.
+     */
+    public function show(string $serial): View
+    {
+        $device = $this->repository
+            ->findBySerial($serial);
+
+        abort_if(
+            $device === null,
+            404,
+            'Device tidak ditemukan.'
+        );
+
+        return view(
+            'genieacs.devices.show',
+            [
+                'device' => $device,
+                'customer' => $this->matcher->customer($device),
+            ]
         );
     }
 }

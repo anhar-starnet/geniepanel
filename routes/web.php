@@ -24,6 +24,7 @@ use App\Http\Controllers\GenieACS\DeviceController;
 
 Route::prefix('genieacs')
     ->name('genieacs.')
+    ->middleware('auth')
     ->group(function () {
 
         Route::get(
@@ -31,8 +32,12 @@ Route::prefix('genieacs')
             [DeviceController::class, 'index']
         )->name('devices.index');
 
-    });
+        Route::get(
+            '/devices/{serial}',
+            [DeviceController::class, 'show']
+        )->name('devices.show');
 
+    });
 Route::get(
     'customers/{customer}/activate',
     [CustomerActivationController::class, 'create']
