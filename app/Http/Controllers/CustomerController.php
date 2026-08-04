@@ -8,15 +8,22 @@ use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Models\Ont;
 use App\Models\Package;
+use App\Services\Customer\ResumeCustomer;
+use App\Services\Customer\SuspendCustomer;
+use App\Services\Customer\TerminateCustomer;
+use App\Services\GenieACS\DeviceProvisioning;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use App\Services\Customer\SuspendCustomer;
-use App\Services\Customer\ResumeCustomer;
-use App\Services\Customer\TerminateCustomer;
 
 class CustomerController extends Controller
 {
+    public function __construct(
+        protected DeviceProvisioning $deviceProvisioning
+    ) {
+    }
+
     /**
      * Daftar pelanggan
      */
@@ -35,7 +42,7 @@ class CustomerController extends Controller
     /**
      * Form tambah pelanggan
      */
-    public function create(): View
+    public function create(Request $request): View
     {
         $packages = Package::where('status', true)
             ->orderBy('name')
@@ -49,11 +56,22 @@ class CustomerController extends Controller
             6
         );
 
-        return view('customers.create', compact(
-            'packages',
-            'onts',
-            'customerCode'
-        ));
+        $device = null;
+
+        if ($request->filled('device')) {
+            $device = $this->deviceProvisioning
+                ->device($request->string('device')->toString());
+        }
+
+        return view(
+            'customers.create',
+            compact(
+                'packages',
+                'onts',
+                'customerCode',
+                'device'
+            )
+        );
     }
 
     /**
@@ -65,9 +83,9 @@ class CustomerController extends Controller
 
             $data = $request->validated();
 
-$data['status'] = 'active';
+            $data['status'] = 'active';
 
-Customer::create($data);
+            Customer::create($data);
 
         });
 
@@ -83,30 +101,22 @@ Customer::create($data);
      * Detail pelanggan
      */
     public function show(Customer $customer): View
-{
-    $customer->load([
+    {
+        $customer->load([
+            'package',
+            'ont',
+            'ont.splitterPort',
+            'ont.splitterPort.splitter',
+            'ont.splitterPort.splitter.odp',
+            'ont.splitterPort.splitter.odp.pop',
+            'ont.splitterPort.splitter.odp.pop.area',
+        ]);
 
-        'package',
-
-        'ont',
-
-        'ont.splitterPort',
-
-        'ont.splitterPort.splitter',
-
-        'ont.splitterPort.splitter.odp',
-
-        'ont.splitterPort.splitter.odp.pop',
-
-        'ont.splitterPort.splitter.odp.pop.area',
-
-    ]);
-
-    return view(
-        'customers.show',
-        compact('customer')
-    );
-}
+        return view(
+            'customers.show',
+            compact('customer')
+        );
+    }
 
     /**
      * Form edit
@@ -119,11 +129,14 @@ Customer::create($data);
 
         $onts = Ont::orderBy('code')->get();
 
-        return view('customers.edit', compact(
-            'customer',
-            'packages',
-            'onts'
-        ));
+        return view(
+            'customers.edit',
+            compact(
+                'customer',
+                'packages',
+                'onts'
+            )
+        );
     }
 
     /**
@@ -132,8 +145,8 @@ Customer::create($data);
     public function update(
         UpdateCustomerRequest $request,
         Customer $customer
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
+
         DB::transaction(function () use (
             $request,
             $customer
@@ -158,8 +171,8 @@ Customer::create($data);
      */
     public function destroy(
         Customer $customer
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
+
         $customer->delete();
 
         return redirect()
@@ -169,44 +182,45 @@ Customer::create($data);
                 'Pelanggan berhasil dihapus.'
             );
     }
+
     public function suspend(
-    Customer $customer,
-    SuspendCustomer $service
-): RedirectResponse
-{
-    $service->handle($customer);
+        Customer $customer,
+        SuspendCustomer $service
+    ): RedirectResponse {
 
-    return back()->with(
-        'success',
-        'Customer berhasil di-suspend.'
-    );
-}
+        $service->handle($customer);
 
-public function resume(
-    Customer $customer,
-    ResumeCustomer $service
-): RedirectResponse
-{
-    $service->handle($customer);
-
-    return back()->with(
-        'success',
-        'Customer berhasil diaktifkan kembali.'
-    );
-}
-
-public function terminate(
-    Customer $customer,
-    TerminateCustomer $service
-): RedirectResponse
-{
-    $service->handle($customer);
-
-    return redirect()
-        ->route('customers.index')
-        ->with(
+        return back()->with(
             'success',
-            'Customer berhasil diterminasi.'
+            'Customer berhasil di-suspend.'
         );
-}
+    }
+
+    public function resume(
+        Customer $customer,
+        ResumeCustomer $service
+    ): RedirectResponse {
+
+        $service->handle($customer);
+
+        return back()->with(
+            'success',
+            'Customer berhasil diaktifkan kembali.'
+        );
+    }
+
+    public function terminate(
+        Customer $customer,
+        TerminateCustomer $service
+    ): RedirectResponse {
+
+        $service->handle($customer);
+
+        return redirect()
+            ->route('customers.index')
+            ->with(
+                'success',
+                'Customer berhasil diterminasi.'
+            );
+    }
 }

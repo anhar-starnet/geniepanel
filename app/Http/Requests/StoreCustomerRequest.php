@@ -15,13 +15,13 @@ class StoreCustomerRequest extends FormRequest
     }
 
     /**
-     * Validasi input customer
+     * Validasi input customer.
      */
     public function rules(): array
     {
         return [
 
-            'customer_code' => 'required|unique:customers,customer_code',
+            'customer_code' => 'required|string|max:20|unique:customers,customer_code',
 
             'name' => 'required|string|max:100',
 
@@ -39,6 +39,10 @@ class StoreCustomerRequest extends FormRequest
 
             'package_id' => 'nullable|exists:packages,id',
 
+            'pop_id' => 'nullable|exists:pops,id',
+
+            'odp_id' => 'nullable|exists:odps,id',
+
             'ont_id' => 'nullable|exists:onts,id',
 
             'service_type' => 'required|in:PPPOE,STATIC,HOTSPOT',
@@ -47,39 +51,53 @@ class StoreCustomerRequest extends FormRequest
 
             'pppoe_password' => 'nullable|string|max:100',
 
-            'status' => 'required|in:active,suspend,terminated',
+            'serial_number' => 'nullable|string|max:100',
+
+            'status' => 'nullable|in:active,suspend,terminated',
 
         ];
     }
 
     /**
-     * Nama field agar lebih enak dibaca
+     * Nama field.
      */
     public function attributes(): array
     {
         return [
 
-            'customer_code'   => 'Kode Customer',
+            'customer_code' => 'Kode Customer',
 
-            'name'            => 'Nama Customer',
+            'name' => 'Nama Customer',
 
-            'nik'             => 'NIK',
+            'nik' => 'NIK',
 
-            'phone'           => 'Nomor HP',
+            'phone' => 'Nomor HP',
 
-            'email'           => 'Email',
+            'email' => 'Email',
 
-            'address'         => 'Alamat',
+            'address' => 'Alamat',
 
-            'package_id'      => 'Paket Internet',
+            'latitude' => 'Latitude',
 
-            'ont_id'          => 'ONT',
+            'longitude' => 'Longitude',
 
-            'service_type'    => 'Jenis Layanan',
+            'package_id' => 'Paket Internet',
 
-            'pppoe_username'  => 'Username',
+            'pop_id' => 'POP',
 
-            'pppoe_password'  => 'Password',
+            'odp_id' => 'ODP',
+
+            'ont_id' => 'ONT',
+
+            'service_type' => 'Jenis Layanan',
+
+            'pppoe_username' => 'Username PPPoE',
+
+            'pppoe_password' => 'Password PPPoE',
+
+            'serial_number' => 'Serial Number',
+
+            'status' => 'Status',
 
         ];
     }

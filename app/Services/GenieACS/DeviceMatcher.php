@@ -41,10 +41,26 @@ class DeviceMatcher
      */
     public function customer(DeviceDTO $device): ?Customer
     {
-        return Customer::where(
-            'pppoe_username',
-            $device->pppoeUsername
-        )->first();
+        return Customer::query()
+
+            ->with([
+
+                'package',
+
+                'ont.splitterPort.splitter.odp.pop.area',
+
+                'pop',
+
+                'odp',
+
+            ])
+
+            ->where(
+                'pppoe_username',
+                $device->pppoeUsername
+            )
+
+            ->first();
     }
 
     /**
@@ -64,7 +80,11 @@ class DeviceMatcher
     public function orphanDevices(): Collection
     {
         return $this->unassigned()
-            ->map(fn ($row) => $row->device)
+
+            ->map(
+                fn ($row) => $row->device
+            )
+
             ->values();
     }
 

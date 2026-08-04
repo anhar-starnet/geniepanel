@@ -152,7 +152,61 @@
                 </div>
 
             </div>
+             @if(isset($device))
 
+<hr>
+
+<h5>
+    <i class="fas fa-wifi"></i>
+    Data GenieACS
+</h5>
+
+<div class="row">
+
+    <div class="col-md-6 mb-3">
+        <label>Serial Number</label>
+
+        <input
+            type="text"
+            class="form-control"
+            name="serial_number"
+            value="{{ old('serial_number', $device->serialNumber) }}"
+            readonly>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label>Device ID</label>
+
+        <input
+            type="text"
+            class="form-control"
+            value="{{ $device->id }}"
+            readonly>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label>Vendor</label>
+
+        <input
+            type="text"
+            class="form-control"
+            value="{{ $device->manufacturer }}"
+            readonly>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label>Model</label>
+
+        <input
+            type="text"
+            class="form-control"
+            value="{{ $device->productClass }}"
+            readonly>
+    </div>
+
+</div>
+
+@endif
             <hr>
 
             <h5>
@@ -174,7 +228,7 @@
                         type="text"
                         name="pppoe_username"
                         class="form-control"
-                        value="{{ old('pppoe_username') }}">
+                        value="{{ old('pppoe_username', $device->pppoeUsername ?? '') }}">
 
                 </div>
 
