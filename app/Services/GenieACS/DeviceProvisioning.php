@@ -5,7 +5,8 @@ namespace App\Services\GenieACS;
 class DeviceProvisioning
 {
     public function __construct(
-        protected DeviceRepository $repository
+        protected DeviceRepository $repository,
+        protected GenieACSClient $client,
     ) {
     }
 
@@ -54,6 +55,42 @@ class DeviceProvisioning
                     $device->id === $deviceId
             );
     }
+
+    /**
+ * Kirim task Refresh ke GenieACS.
+ */
+public function refresh(
+    string $deviceId
+): array {
+
+    return $this->client->refresh(
+        $deviceId
+    );
+}
+
+/**
+ * Kirim task Reboot ke GenieACS.
+ */
+public function reboot(
+    string $deviceId
+): array {
+
+    return $this->client->reboot(
+        $deviceId
+    );
+}
+
+/**
+ * Kirim task Factory Reset ke GenieACS.
+ */
+public function factoryReset(
+    string $deviceId
+): array {
+
+    return $this->client->factoryReset(
+        $deviceId
+    );
+}
 
     /**
      * Ambil DeviceDTO.

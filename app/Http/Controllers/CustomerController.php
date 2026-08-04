@@ -55,10 +55,9 @@ public function refresh(
 
     }
 
-    $this->genieacs->refresh(
-        $customer->ont->genieacs_device_id
-    );
-
+    $this->deviceProvisioning->refresh(
+    $customer->ont->genieacs_device_id
+);
     return back()->with(
         'success',
         'Refresh task berhasil dikirim ke GenieACS.'
