@@ -18,13 +18,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use App\Services\GenieACS\GenieACSClient;
+use App\Services\GenieACS\OntSyncService;
 
 class CustomerController extends Controller
 {
     public function __construct(
     protected DeviceProvisioning $deviceProvisioning,
     protected DeviceLive $deviceLive,
-    protected GenieACSClient $genieacs
+    protected GenieACSClient $genieacs,
+    protected OntSyncService $ontSync,
 ) {
 }
 
@@ -141,28 +143,39 @@ public function refresh(
      * Detail pelanggan
      */
     public function show(Customer $customer): View
-    {
-        $customer->load([
-            'package',
-            'ont',
-            'ont.splitterPort',
-            'ont.splitterPort.splitter',
-            'ont.splitterPort.splitter.odp',
-            'ont.splitterPort.splitter.odp.pop',
-            'ont.splitterPort.splitter.odp.pop.area',
-        ]);
+{
+    $customer->load([
+        'package',
+        'ont',
+        'ont.splitterPort',
+        'ont.splitterPort.splitter',
+        'ont.splitterPort.splitter.odp',
+        'ont.splitterPort.splitter.odp.pop',
+        'ont.splitterPort.splitter.odp.pop.area',
+    ]);
 
-        $live = $this->deviceLive
-    ->customer($customer);
+    $this->ontSync->syncCustomer($customer);
 
-return view(
-    'customers.show',
-    compact(
-        'customer',
-        'live'
-    )
-);
-    }
+    $customer->refresh()->load([
+        'package',
+        'ont',
+        'ont.splitterPort',
+        'ont.splitterPort.splitter',
+        'ont.splitterPort.splitter.odp',
+        'ont.splitterPort.splitter.odp.pop',
+        'ont.splitterPort.splitter.odp.pop.area',
+    ]);
+
+    $live = $this->deviceLive->customer($customer);
+
+    return view(
+        'customers.show',
+        compact(
+            'customer',
+            'live'
+        )
+    );
+}
 
     /**
      * Form edit
