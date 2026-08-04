@@ -9,9 +9,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Services\GenieACS\OntSyncService;
 
 class CustomerOntController extends Controller
 {
+    public function __construct(
+    protected OntSyncService $ontSync
+) {
+}
     /**
      * Form Assign ONT.
      */
@@ -76,6 +81,8 @@ class CustomerOntController extends Controller
             ]);
 
         });
+
+        $this->ontSync->sync($ont);
 
         return redirect()
             ->route(
