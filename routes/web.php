@@ -14,6 +14,24 @@ use App\Http\Controllers\SplitterPortController;
 use App\Http\Controllers\OntController;
 use App\Http\Controllers\OntDeploymentController;
 use App\Http\Controllers\CustomerActivationController;
+/*
+|--------------------------------------------------------------------------
+| GenieACS
+|--------------------------------------------------------------------------
+*/
+
+use App\Http\Controllers\GenieACS\DeviceController;
+
+Route::prefix('genieacs')
+    ->name('genieacs.')
+    ->group(function () {
+
+        Route::get(
+            '/devices',
+            [DeviceController::class, 'index']
+        )->name('devices.index');
+
+    });
 
 Route::get(
     'customers/{customer}/activate',
@@ -24,6 +42,20 @@ Route::post(
     'customers/{customer}/activate',
     [CustomerActivationController::class, 'store']
 )->name('customers.activate.store');
+Route::post(
+    'customers/{customer}/suspend',
+    [CustomerController::class, 'suspend']
+)->name('customers.suspend');
+
+Route::post(
+    'customers/{customer}/resume',
+    [CustomerController::class, 'resume']
+)->name('customers.resume');
+
+Route::delete(
+    'customers/{customer}/terminate',
+    [CustomerController::class, 'terminate'
+])->name('customers.terminate');
 
 Route::get('/', function () {
     return redirect('/login');
@@ -100,3 +132,44 @@ Route::post(
 });
 
 require __DIR__.'/auth.php';
+use App\Services\GenieACS\GenieACSClient;
+
+Route::get('/test-genieacs', function (
+    GenieACSClient $client
+) {
+
+    Route::get('/test-genieacs', function (GenieACSClient $client) {
+
+    return collect($client->devices())
+
+        ->map(function ($device) {
+
+            return [
+
+                'serial'       => $device->serialNumber,
+
+                'vendor'       => $device->manufacturer,
+
+                'model'        => $device->productClass,
+
+                'pppoe'        => $device->pppoeUsername,
+
+                'ip'           => $device->pppoeIP,
+
+                'rx_power'     => $device->rxPower,
+
+                'temperature'  => $device->temperature,
+
+                'uptime'       => $device->uptime,
+
+                'lastInform'   => $device->lastInform,
+
+                'online'       => $device->isOnline(),
+
+            ];
+
+        });
+
+});
+
+});

@@ -27,6 +27,8 @@ class Customer extends Model
 
         'ont_id',
 
+        'service_type',
+
         'pppoe_username',
         'pppoe_password',
 
@@ -68,9 +70,10 @@ class Customer extends Model
     {
         return $this->belongsTo(Odp::class);
     }
-        /*
+
+    /*
     |--------------------------------------------------------------------------
-    | Fiber Path
+    | Fiber Path Helper
     |--------------------------------------------------------------------------
     */
 
@@ -96,9 +99,10 @@ class Customer extends Model
         return $this->ont
             ?->splitterPort;
     }
+
     /*
     |--------------------------------------------------------------------------
-    | Helper
+    | Status Helper
     |--------------------------------------------------------------------------
     */
 
@@ -121,13 +125,13 @@ class Customer extends Model
     {
         return match ($this->status) {
 
-            'active'      => 'Aktif',
+            'active'     => 'Aktif',
 
-            'suspend'     => 'Suspend',
+            'suspend'    => 'Suspend',
 
-            'terminated'  => 'Terminasi',
+            'terminated' => 'Terminasi',
 
-            default       => '-',
+            default      => '-',
 
         };
     }
@@ -136,13 +140,34 @@ class Customer extends Model
     {
         return match ($this->status) {
 
-            'active'      => 'success',
+            'active'     => 'success',
 
-            'suspend'     => 'warning',
+            'suspend'    => 'warning',
 
-            'terminated'  => 'danger',
+            'terminated' => 'danger',
 
-            default       => 'secondary',
+            default      => 'secondary',
+
+        };
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Service Type
+    |--------------------------------------------------------------------------
+    */
+
+    public function serviceTypeText(): string
+    {
+        return match ($this->service_type) {
+
+            'PPPOE'   => 'PPPoE',
+
+            'STATIC'  => 'Static IP',
+
+            'HOTSPOT' => 'Hotspot',
+
+            default   => '-',
 
         };
     }

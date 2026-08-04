@@ -11,6 +11,9 @@ use App\Models\Package;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Services\Customer\SuspendCustomer;
+use App\Services\Customer\ResumeCustomer;
+use App\Services\Customer\TerminateCustomer;
 
 class CustomerController extends Controller
 {
@@ -60,9 +63,11 @@ class CustomerController extends Controller
     {
         DB::transaction(function () use ($request) {
 
-            Customer::create(
-                $request->validated()
-            );
+            $data = $request->validated();
+
+$data['status'] = 'active';
+
+Customer::create($data);
 
         });
 
@@ -164,4 +169,44 @@ class CustomerController extends Controller
                 'Pelanggan berhasil dihapus.'
             );
     }
+    public function suspend(
+    Customer $customer,
+    SuspendCustomer $service
+): RedirectResponse
+{
+    $service->handle($customer);
+
+    return back()->with(
+        'success',
+        'Customer berhasil di-suspend.'
+    );
+}
+
+public function resume(
+    Customer $customer,
+    ResumeCustomer $service
+): RedirectResponse
+{
+    $service->handle($customer);
+
+    return back()->with(
+        'success',
+        'Customer berhasil diaktifkan kembali.'
+    );
+}
+
+public function terminate(
+    Customer $customer,
+    TerminateCustomer $service
+): RedirectResponse
+{
+    $service->handle($customer);
+
+    return redirect()
+        ->route('customers.index')
+        ->with(
+            'success',
+            'Customer berhasil diterminasi.'
+        );
+}
 }

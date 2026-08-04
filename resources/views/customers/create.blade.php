@@ -18,76 +18,127 @@
 </div>
 @endif
 
-<div class="card">
+<div class="card card-primary">
 
-    <div class="card-body">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-user-plus"></i>
+            Form Pelanggan Baru
+        </h3>
+    </div>
 
-        <form action="{{ route('customers.store') }}" method="POST">
+    <form action="{{ route('customers.store') }}" method="POST">
 
-            @csrf
+        @csrf
+
+        <div class="card-body">
 
             <div class="row">
 
-                <div class="col-md-4 mb-3">
-                    <label>Kode Pelanggan</label>
-                    <input type="text"
-                           class="form-control"
-                           name="customer_code"
-                           value="{{ old('customer_code', $customerCode) }}"
-                           readonly>
+                <div class="col-md-3 mb-3">
+                    <label>Kode Customer</label>
+
+                    <input
+                        type="text"
+                        name="customer_code"
+                        class="form-control"
+                        value="{{ old('customer_code', $customerCode) }}"
+                        readonly>
                 </div>
 
-                <div class="col-md-8 mb-3">
-                    <label>Nama Pelanggan</label>
-                    <input type="text"
-                           class="form-control"
-                           name="name"
-                           value="{{ old('name') }}"
-                           required>
+                <div class="col-md-9 mb-3">
+                    <label>Nama Customer</label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        value="{{ old('name') }}"
+                        required>
                 </div>
 
                 <div class="col-md-4 mb-3">
                     <label>NIK</label>
-                    <input type="text"
-                           class="form-control"
-                           name="nik"
-                           value="{{ old('nik') }}">
+
+                    <input
+                        type="text"
+                        name="nik"
+                        class="form-control"
+                        value="{{ old('nik') }}">
                 </div>
 
                 <div class="col-md-4 mb-3">
                     <label>Nomor HP</label>
-                    <input type="text"
-                           class="form-control"
-                           name="phone"
-                           value="{{ old('phone') }}">
+
+                    <input
+                        type="text"
+                        name="phone"
+                        class="form-control"
+                        value="{{ old('phone') }}">
                 </div>
 
                 <div class="col-md-4 mb-3">
                     <label>Email</label>
-                    <input type="email"
-                           class="form-control"
-                           name="email"
-                           value="{{ old('email') }}">
+
+                    <input
+                        type="email"
+                        name="email"
+                        class="form-control"
+                        value="{{ old('email') }}">
                 </div>
 
                 <div class="col-md-12 mb-3">
                     <label>Alamat</label>
-                    <textarea class="form-control"
-                              rows="3"
-                              name="address">{{ old('address') }}</textarea>
+
+                    <textarea
+                        name="address"
+                        rows="3"
+                        class="form-control">{{ old('address') }}</textarea>
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
+
+                    <label>Jenis Layanan</label>
+
+                    <select
+                        name="service_type"
+                        id="service_type"
+                        class="form-control">
+
+                        <option value="PPPOE"
+                            {{ old('service_type','PPPOE')=='PPPOE'?'selected':'' }}>
+                            PPPoE
+                        </option>
+
+                        <option value="STATIC"
+                            {{ old('service_type')=='STATIC'?'selected':'' }}>
+                            Static IP
+                        </option>
+
+                        <option value="HOTSPOT"
+                            {{ old('service_type')=='HOTSPOT'?'selected':'' }}>
+                            Hotspot
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-8 mb-3">
+
                     <label>Paket Internet</label>
 
-                    <select name="package_id" class="form-control">
+                    <select
+                        name="package_id"
+                        class="form-control">
 
                         <option value="">-- Pilih Paket --</option>
 
                         @foreach($packages as $package)
 
-                            <option value="{{ $package->id }}"
-                                {{ old('package_id') == $package->id ? 'selected' : '' }}>
+                            <option
+                                value="{{ $package->id }}"
+                                {{ old('package_id')==$package->id?'selected':'' }}>
 
                                 {{ $package->name }}
                                 ({{ $package->download_kbps/1000 }} Mbps)
@@ -100,69 +151,91 @@
 
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label>Status</label>
+            </div>
 
-                    <select name="status" class="form-control">
+            <hr>
 
-                        <option value="active">Aktif</option>
-                        <option value="suspend">Suspend</option>
-                        <option value="terminated">Terminasi</option>
+            <h5>
+                <i class="fas fa-key"></i>
+                Authentication
+            </h5>
 
-                    </select>
-
-                </div>
+            <div class="row">
 
                 <div class="col-md-6 mb-3">
-                    <label>Username PPPoE</label>
 
-                    <input type="text"
-                           class="form-control"
-                           name="pppoe_username"
-                           value="{{ old('pppoe_username') }}">
-                </div>
+                    <label id="lbl_username">
 
-                <div class="col-md-6 mb-3">
-                    <label>Password PPPoE</label>
+                        Username
 
-                    <input type="text"
-                           class="form-control"
-                           name="pppoe_password"
-                           value="{{ old('pppoe_password') }}">
+                    </label>
+
+                    <input
+                        type="text"
+                        name="pppoe_username"
+                        class="form-control"
+                        value="{{ old('pppoe_username') }}">
+
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label>Serial Number ONT</label>
 
-                    <input type="text"
-                           class="form-control"
-                           name="serial_number"
-                           value="{{ old('serial_number') }}">
-                </div>
+                    <label id="lbl_password">
 
-                <div class="col-md-3 mb-3">
-                    <label>Latitude</label>
+                        Password
 
-                    <input type="text"
-                           class="form-control"
-                           name="latitude"
-                           value="{{ old('latitude') }}">
-                </div>
+                    </label>
 
-                <div class="col-md-3 mb-3">
-                    <label>Longitude</label>
+                    <input
+                        type="text"
+                        name="pppoe_password"
+                        class="form-control"
+                        value="{{ old('pppoe_password') }}">
 
-                    <input type="text"
-                           class="form-control"
-                           name="longitude"
-                           value="{{ old('longitude') }}">
                 </div>
 
             </div>
 
             <hr>
 
-            <button class="btn btn-success">
+            <h5>
+                <i class="fas fa-map-marker-alt"></i>
+                Lokasi
+            </h5>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label>Latitude</label>
+
+                    <input
+                        type="text"
+                        name="latitude"
+                        class="form-control"
+                        value="{{ old('latitude') }}">
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label>Longitude</label>
+
+                    <input
+                        type="text"
+                        name="longitude"
+                        class="form-control"
+                        value="{{ old('longitude') }}">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+
+            <button class="btn btn-primary">
 
                 <i class="fas fa-save"></i>
 
@@ -177,10 +250,57 @@
 
             </a>
 
-        </form>
+        </div>
 
-    </div>
+    </form>
 
 </div>
+
+@stop
+
+@section('js')
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const service = document.getElementById('service_type');
+    const lblUser = document.getElementById('lbl_username');
+    const lblPass = document.getElementById('lbl_password');
+
+    function refreshLabel() {
+
+        switch (service.value) {
+
+            case 'STATIC':
+
+                lblUser.innerText = 'IP Address';
+                lblPass.innerText = 'Gateway';
+
+                break;
+
+            case 'HOTSPOT':
+
+                lblUser.innerText = 'Username Hotspot';
+                lblPass.innerText = 'Password Hotspot';
+
+                break;
+
+            default:
+
+                lblUser.innerText = 'Username PPPoE';
+                lblPass.innerText = 'Password PPPoE';
+
+        }
+
+    }
+
+    service.addEventListener('change', refreshLabel);
+
+    refreshLabel();
+
+});
+
+</script>
 
 @stop

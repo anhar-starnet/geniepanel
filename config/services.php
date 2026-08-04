@@ -34,5 +34,18 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'genieacs' => [
+
+    'url' => env(
+        'GENIEACS_URL',
+        'http://192.168.123.2:7557'
+    ),
+
+    'timeout' => env(
+        'GENIEACS_TIMEOUT',
+        10
+    ),
+
+],
 
 ];

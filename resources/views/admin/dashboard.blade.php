@@ -171,5 +171,200 @@
     </div>
 
 </div>
+<div class="row">
 
+    <div class="col-md-8">
+
+        <div class="card">
+
+            <div class="card-header bg-info">
+
+                <h3 class="card-title">
+                    <i class="fas fa-user-clock"></i>
+                    Customer Terbaru
+                </h3>
+
+            </div>
+
+            <div class="card-body p-0">
+
+                <table class="table table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Kode</th>
+                            <th>Nama</th>
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    @forelse($recentCustomers as $customer)
+
+                        <tr>
+
+                            <td>{{ $customer->customer_code }}</td>
+
+                            <td>{{ $customer->name }}</td>
+
+                            <td>
+
+                                <span class="badge badge-{{ $customer->badgeClass() }}">
+
+                                    {{ $customer->statusText() }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+
+                            <td colspan="3" class="text-center">
+
+                                Belum ada customer.
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card">
+
+            <div class="card-header bg-secondary">
+
+                <h3 class="card-title">
+
+                    <i class="fas fa-bolt"></i>
+
+                    Shortcut
+
+                </h3>
+
+            </div>
+
+            <div class="card-body">
+
+                <a href="{{ route('customers.index') }}"
+                   class="btn btn-primary btn-block mb-2">
+
+                    <i class="fas fa-users"></i>
+
+                    Customer
+
+                </a>
+
+                <a href="{{ route('onts.index') }}"
+                   class="btn btn-success btn-block mb-2">
+
+                    <i class="fas fa-network-wired"></i>
+
+                    ONT
+
+                </a>
+
+                <a href="{{ route('packages.index') }}"
+                   class="btn btn-warning btn-block mb-2">
+
+                    <i class="fas fa-box"></i>
+
+                    Paket
+
+                </a>
+
+                <a href="{{ route('areas.index') }}"
+                   class="btn btn-info btn-block mb-2">
+
+                    <i class="fas fa-map-marker-alt"></i>
+
+                    Area
+
+                </a>
+
+                <a href="{{ route('pops.index') }}"
+                   class="btn btn-dark btn-block mb-2">
+
+                    <i class="fas fa-building"></i>
+
+                    POP
+
+                </a>
+
+                <a href="{{ route('odps.index') }}"
+                   class="btn btn-danger btn-block">
+
+                    <i class="fas fa-project-diagram"></i>
+
+                    ODP
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <div class="card">
+
+            <div class="card-header bg-light">
+
+                <h3 class="card-title">
+
+                    <i class="fas fa-chart-line"></i>
+
+                    Monitoring
+
+                </h3>
+
+            </div>
+
+            <div class="card-body text-center text-muted">
+
+                <h5>
+
+                    GenieACS Monitoring (Coming Soon)
+
+                </h5>
+
+                <p>
+
+                    Widget Online / Offline ONU akan tampil di sini.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 @stop
