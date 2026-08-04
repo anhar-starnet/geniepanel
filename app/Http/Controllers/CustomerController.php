@@ -11,6 +11,7 @@ use App\Models\Package;
 use App\Services\Customer\ResumeCustomer;
 use App\Services\Customer\SuspendCustomer;
 use App\Services\Customer\TerminateCustomer;
+use App\Services\GenieACS\DeviceLive;
 use App\Services\GenieACS\DeviceProvisioning;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,9 +21,10 @@ use Illuminate\View\View;
 class CustomerController extends Controller
 {
     public function __construct(
-        protected DeviceProvisioning $deviceProvisioning
-    ) {
-    }
+    protected DeviceProvisioning $deviceProvisioning,
+    protected DeviceLive $deviceLive
+) {
+}
 
     /**
      * Daftar pelanggan
@@ -112,10 +114,16 @@ class CustomerController extends Controller
             'ont.splitterPort.splitter.odp.pop.area',
         ]);
 
-        return view(
-            'customers.show',
-            compact('customer')
-        );
+        $live = $this->deviceLive
+    ->customer($customer);
+
+return view(
+    'customers.show',
+    compact(
+        'customer',
+        'live'
+    )
+);
     }
 
     /**
