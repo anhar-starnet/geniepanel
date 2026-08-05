@@ -355,6 +355,19 @@
                     <div class="col-md-3"><div class="small-box bg-primary"><div class="inner"><h3>{{ $genieacsStats['assigned'] ?? 0 }}</h3><p>Assigned</p></div></div></div>
                     <div class="col-md-3"><div class="small-box bg-warning"><div class="inner"><h3>{{ $genieacsStats['unassigned'] ?? 0 }}</h3><p>Unassigned</p></div></div></div>
                 </div>
+                <hr>
+                <h5 class="text-left mb-3">
+                    <i class="fas fa-bell text-danger"></i> Active Alarm
+                </h5>
+
+                <div class="row">
+                    <div class="col-md-2"><div class="small-box bg-danger"><div class="inner"><h3>{{ $alarmSummary['offline'] ?? 0 }}</h3><p>Offline</p></div></div></div>
+                    <div class="col-md-2"><div class="small-box bg-warning"><div class="inner"><h3>{{ $alarmSummary['rx_warning'] ?? 0 }}</h3><p>RX Warning</p></div></div></div>
+                    <div class="col-md-2"><div class="small-box bg-danger"><div class="inner"><h3>{{ $alarmSummary['rx_critical'] ?? 0 }}</h3><p>RX Critical</p></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-warning"><div class="inner"><h3>{{ $alarmSummary['temp_warning'] ?? 0 }}</h3><p>Temp Warning</p></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-danger"><div class="inner"><h3>{{ $alarmSummary['temp_critical'] ?? 0 }}</h3><p>Temp Critical</p></div></div></div>
+                </div>
+
 
             </div>
 
