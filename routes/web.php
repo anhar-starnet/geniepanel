@@ -73,6 +73,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 Route::middleware('auth')->group(function () {
 
+    Route::get('/dashboard/live', function () {
+        return response()->json(app(\App\Services\GenieACS\DeviceRepository::class)->statistics());
+    })->name('dashboard.live');
+
+});
+
+Route::middleware('auth')->group(function () {
+
     /*
     |--------------------------------------------------------------------------
     | Profile
