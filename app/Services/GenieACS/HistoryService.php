@@ -5,6 +5,7 @@ namespace App\Services\GenieACS;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
+use App\Models\DeviceHistory;
 
 class HistoryService
 {
@@ -17,21 +18,64 @@ class HistoryService
      * Collect seluruh device.
      */
     public function collect(): int
-    {
-        $count = 0;
+{
+    $rows = [];
 
-        $this->devices
-            ->matched()
-            ->each(function ($row) use (&$count) {
+    foreach ($this->devices->matched() as $row) {
 
-                $this->collectDevice($row->device);
+        $device = $row->device;
 
-                $count++;
+        $rows[] = $this->buildRow($device);
 
-            });
-
-        return $count;
+        if (count($rows) >= 500) {
+            DeviceHistory::insert($rows);
+            $rows = [];
+        }
     }
+
+    if (! empty($rows)) {
+        DeviceHistory::insert($rows);
+    }
+
+    return $this->devices->matched()->count();
+}
+
+    protected function buildRow(DeviceDTO $device): array
+{
+    return [
+
+        'device_id'       => $device->id,
+
+        'serial_number'   => $device->serialNumber,
+
+        'manufacturer'    => $device->manufacturer,
+
+        'product_class'   => $device->productClass,
+
+        'online'          => $device->isOnline(),
+
+        'rx_power'        => $device->rxValue(),
+
+        'temperature'     => $device->temperatureValue(),
+
+        'uptime'          => $device->uptime,
+
+        'pppoe_username'  => $device->pppoeUsername,
+
+        'pppoe_ip'        => $device->pppoeIP,
+
+        'last_inform' => $device->lastInform
+            ? \Carbon\Carbon::parse($device->lastInform)
+                ->setTimezone(config('app.timezone'))
+                ->toDateTimeString()
+            : null,
+
+        'created_at' => now(),
+
+        'updated_at' => now(),
+
+    ];
+}
 
     /**
      * Simpan history satu device.
