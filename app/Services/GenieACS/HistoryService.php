@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use App\Models\DeviceHistory;
-use Illuminate\Support\Collection;
 
 class HistoryService
 {
@@ -18,39 +17,24 @@ class HistoryService
 
     protected function hasChanged(DeviceDTO $device): bool
 {
-    $last = $this->latestHistory->get(
-    $device->serialNumber
-);
-
-if (!$last) {
-    return true;
-}
-        'serial_number',
-        $device->serialNumber
-    )
-    ->latest('id')
-    ->first();
+    $last = $this->latestHistory->get($device->serialNumber);
 
     if (!$last) {
         return true;
     }
 
-    // Status online berubah
     if ($last->online != $device->isOnline()) {
         return true;
     }
 
-    // RX berubah >= 0.5 dBm
-    if (abs($last->rx_power - $device->rxValue()) >= 0.5) {
+    if (abs((float)$last->rx_power - $device->rxValue()) >= 0.5) {
         return true;
     }
 
-    // Temperature berubah >= 1°C
-    if (abs($last->temperature - $device->temperatureValue()) >= 1) {
+    if (abs((float)$last->temperature - $device->temperatureValue()) >= 1) {
         return true;
     }
 
-    // IP PPPoE berubah
     if ($last->pppoe_ip != $device->pppoeIP) {
         return true;
     }
@@ -138,40 +122,7 @@ if (!$last) {
     ];
 }
 
-    /**
-     * Simpan history satu device.
-     */
-    public function collectDevice(DeviceDTO $device): void
-    {
-        DB::table('device_history')->insert([
-
-            'device_id'      => $device->id,
-            'serial_number'  => $device->serialNumber,
-
-            'manufacturer'   => $device->manufacturer,
-            'product_class'  => $device->productClass,
-
-            'online'         => $device->isOnline(),
-
-            'rx_power'    => $device->rxValue(),
-            'temperature' => $device->temperatureValue(),
-            'uptime'      => $device->uptime,
-
-            'pppoe_username' => $device->pppoeUsername,
-            'pppoe_ip'       => $device->pppoeIP,
-
-            'last_inform' => $device->lastInform
-    ? Carbon::parse($device->lastInform)
-        ->setTimezone(config('app.timezone'))
-        ->toDateTimeString()
-    : null,
-
-            'created_at'     => now(),
-            'updated_at'     => now(),
-
-        ]);
-    }
-
+    
     /**
      * Statistik history.
      */
