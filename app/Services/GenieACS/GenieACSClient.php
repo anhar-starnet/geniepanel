@@ -190,26 +190,7 @@ class GenieACSClient
             ]
 
         );
+
     }
 
-
-    /**
-     * Factory Reset
-     */
-    public function factoryReset(
-        string $deviceId
-    ): array {
-
-        return $this->post(
-
-            "/devices/{$deviceId}/tasks",
-
-            [
-
-                'name' => 'factoryReset',
-
-            ]
-
-        );
-    }
 }

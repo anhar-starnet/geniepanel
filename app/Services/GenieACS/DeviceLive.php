@@ -94,6 +94,10 @@ class DeviceLive
 
             'online' => $device->isOnline(),
 
+            'onlineLabel' => $device->onlineLabel(),
+
+            'onlineBadge' => $device->onlineBadgeClass(),
+
             'manufacturer' => $device->manufacturer,
 
             'productClass' => $device->productClass,
@@ -108,17 +112,35 @@ class DeviceLive
 
             'rx' => $device->rxPower,
 
+            'rxStatus' => $device->rxStatus(),
+
+            'rxBadge' => $device->rxBadgeClass(),
+
+            'rxPercent' => $device->rxPercentage(),
+
             'rxColor' => $this->rxColor(
                 $device->rxPower
             ),
 
             'temperature' => $device->temperature,
 
+            'temperatureStatus' => $device->temperatureStatus(),
+
+            'temperatureBadge' => $device->temperatureBadgeClass(),
+
             'uptime' => $device->uptime,
 
             'lastInform' => $this->formatLastInform(
                 $device->lastInform
             ),
+
+            'lastInformBadge' => $device->lastInformBadgeClass(),
+
+            'healthScore' => $device->healthScore(),
+
+            'healthStatus' => $device->healthStatus(),
+
+            'healthBadge' => $device->healthBadgeClass(),
 
         ];
     }

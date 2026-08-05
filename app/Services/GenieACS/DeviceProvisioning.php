@@ -80,19 +80,6 @@ public function reboot(
     );
 }
 
-/**
- * Factory Reset ONT.
- */
-public function factoryReset(
-    string $deviceId
-): array {
-
-    return $this->client->factoryReset(
-        $deviceId
-    );
-
-}
-
     /**
      * Ambil DeviceDTO.
      */
