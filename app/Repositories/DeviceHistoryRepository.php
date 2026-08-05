@@ -20,31 +20,31 @@ class DeviceHistoryRepository
      * Trend online per jam (24 jam).
      */
     public function onlineTrend(): Collection
-    {
-        return DeviceHistory::selectRaw("
-                DATE_FORMAT(created_at,'%H:00') as hour,
-                SUM(CASE WHEN online=1 THEN 1 ELSE 0 END) as total
-            ")
-            ->where('created_at', '>=', now()->subDay())
-            ->groupBy(DB::raw("DATE_FORMAT(created_at,'%Y-%m-%d %H')"))
-            ->orderBy('created_at')
-            ->get();
-    }
+{
+    return DeviceHistory::selectRaw("
+            DATE_FORMAT(created_at,'%Y-%m-%d %H:00') as hour,
+            SUM(CASE WHEN online = 1 THEN 1 ELSE 0 END) as total
+        ")
+        ->where('created_at', '>=', now()->subDay())
+        ->groupByRaw("DATE_FORMAT(created_at,'%Y-%m-%d %H:00')")
+        ->orderByRaw("MIN(created_at)")
+        ->get();
+}
 
     /**
      * Trend offline per jam.
      */
     public function offlineTrend(): Collection
-    {
-        return DeviceHistory::selectRaw("
-                DATE_FORMAT(created_at,'%H:00') as hour,
-                SUM(CASE WHEN online=0 THEN 1 ELSE 0 END) as total
-            ")
-            ->where('created_at', '>=', now()->subDay())
-            ->groupBy(DB::raw("DATE_FORMAT(created_at,'%Y-%m-%d %H')"))
-            ->orderBy('created_at')
-            ->get();
-    }
+{
+    return DeviceHistory::selectRaw("
+            DATE_FORMAT(created_at,'%Y-%m-%d %H:00') as hour,
+            SUM(CASE WHEN online = 0 THEN 1 ELSE 0 END) as total
+        ")
+        ->where('created_at', '>=', now()->subDay())
+        ->groupByRaw("DATE_FORMAT(created_at,'%Y-%m-%d %H:00')")
+        ->orderByRaw("MIN(created_at)")
+        ->get();
+}
 
     /**
      * RX Critical.

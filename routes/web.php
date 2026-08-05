@@ -22,6 +22,21 @@ use App\Http\Controllers\CustomerOntController;
 */
 
 use App\Http\Controllers\GenieACS\DeviceController;
+use App\Http\Controllers\AnalyticsController;
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get(
+        '/dashboard/analytics',
+        [AnalyticsController::class, 'index']
+    )->name('dashboard.analytics');
+
+    Route::get(
+        '/api/dashboard/analytics',
+        [AnalyticsController::class, 'api']
+    )->name('api.dashboard.analytics');
+
+});
 
 Route::prefix('genieacs')
     ->name('genieacs.')

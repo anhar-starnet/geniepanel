@@ -6,26 +6,87 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use App\Models\DeviceHistory;
+use Illuminate\Support\Collection;
 
 class HistoryService
 {
+    protected Collection $latestHistory;
     public function __construct(
         protected DeviceRepository $devices
     ) {
     }
+
+    protected function hasChanged(DeviceDTO $device): bool
+{
+    $last = $this->latestHistory->get(
+    $device->serialNumber
+);
+
+if (!$last) {
+    return true;
+}
+        'serial_number',
+        $device->serialNumber
+    )
+    ->latest('id')
+    ->first();
+
+    if (!$last) {
+        return true;
+    }
+
+    // Status online berubah
+    if ($last->online != $device->isOnline()) {
+        return true;
+    }
+
+    // RX berubah >= 0.5 dBm
+    if (abs($last->rx_power - $device->rxValue()) >= 0.5) {
+        return true;
+    }
+
+    // Temperature berubah >= 1°C
+    if (abs($last->temperature - $device->temperatureValue()) >= 1) {
+        return true;
+    }
+
+    // IP PPPoE berubah
+    if ($last->pppoe_ip != $device->pppoeIP) {
+        return true;
+    }
+
+    return false;
+}
 
     /**
      * Collect seluruh device.
      */
     public function collect(): int
 {
+    $this->latestHistory = DeviceHistory::query()
+    ->select(
+        'serial_number',
+        'online',
+        'rx_power',
+        'temperature',
+        'pppoe_ip'
+    )
+    ->whereIn('id', function ($query) {
+        $query->selectRaw('MAX(id)')
+            ->from('device_history')
+            ->groupBy('serial_number');
+    })
+    ->get()
+    ->keyBy('serial_number');
     $rows = [];
 
     foreach ($this->devices->matched() as $row) {
 
         $device = $row->device;
 
-        $rows[] = $this->buildRow($device);
+        if ($this->hasChanged($device)) {
+    $rows[] = $this->buildRow($device);
+}
 
         if (count($rows) >= 500) {
             DeviceHistory::insert($rows);
