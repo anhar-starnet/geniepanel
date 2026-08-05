@@ -10,9 +10,14 @@ use App\Models\Package;
 use App\Models\Pop;
 use App\Models\Splitter;
 use Illuminate\View\View;
+use App\Services\GenieACS\DeviceRepository;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected DeviceRepository $devices
+    ) {}
+
     public function index(): View
     {
         return view('admin.dashboard', [
@@ -37,6 +42,9 @@ class DashboardController extends Controller
             'recentCustomers' => Customer::latest()
                 ->take(5)
                 ->get(),
+
+            // GenieACS
+            'genieacsStats' => $this->devices->statistics(),
 
         ]);
     }
