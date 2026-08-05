@@ -13,6 +13,7 @@
         {{ now()->format('d F Y H:i') }}
     </small>
 </div>
+<div class="text-right text-muted mt-2"><small id="dashboard-live-updated">Last Update: -</small></div>
 @stop
 
 @section('content')
@@ -362,4 +363,43 @@
     </div>
 
 </div>
+<div class="text-right text-muted mt-2"><small id="dashboard-live-updated">Last Update: -</small></div>
 @stop
+
+@push('js')
+<script>
+async function refreshDashboardLive(){
+    try{
+        const r=await fetch("{{ route('dashboard.live') }}",{
+            headers:{'X-Requested-With':'XMLHttpRequest'}
+        });
+        if(!r.ok) return;
+        const s=await r.json();
+
+        const vals={
+            online:s.online ?? 0,
+            offline:s.offline ?? 0,
+            assigned:s.assigned ?? 0,
+            unassigned:s.unassigned ?? 0
+        };
+
+        document.querySelectorAll('.small-box .inner h3').forEach((el)=>{
+            const p=el.nextElementSibling?.textContent?.trim();
+            if(p==='ONU Online') el.textContent=vals.online;
+            if(p==='ONU Offline') el.textContent=vals.offline;
+            if(p==='Assigned') el.textContent=vals.assigned;
+            if(p==='Unassigned') el.textContent=vals.unassigned;
+        });
+
+        let info=document.getElementById('dashboard-live-updated');
+        if(info){
+            info.textContent='Last Update: '+new Date().toLocaleTimeString();
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+setInterval(refreshDashboardLive,30000);
+document.addEventListener('DOMContentLoaded',refreshDashboardLive);
+</script>
+@endpush
