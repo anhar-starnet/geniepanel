@@ -4,6 +4,7 @@ namespace App\Services\GenieACS;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
 
 class HistoryService
 {
@@ -39,7 +40,7 @@ class HistoryService
     {
         DB::table('device_history')->insert([
 
-            'device_id'      => $device->deviceId,
+            'device_id'      => $device->id,
             'serial_number'  => $device->serialNumber,
 
             'manufacturer'   => $device->manufacturer,
@@ -47,14 +48,18 @@ class HistoryService
 
             'online'         => $device->isOnline(),
 
-            'rx_power'       => $device->rxPower,
-            'temperature'    => $device->temperature,
-            'uptime'         => $device->uptime,
+            'rx_power'    => $device->rxValue(),
+            'temperature' => $device->temperatureValue(),
+            'uptime'      => $device->uptime,
 
             'pppoe_username' => $device->pppoeUsername,
             'pppoe_ip'       => $device->pppoeIP,
 
-            'last_inform'    => $device->lastInform,
+            'last_inform' => $device->lastInform
+    ? Carbon::parse($device->lastInform)
+        ->setTimezone(config('app.timezone'))
+        ->toDateTimeString()
+    : null,
 
             'created_at'     => now(),
             'updated_at'     => now(),
