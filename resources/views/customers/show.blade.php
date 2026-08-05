@@ -50,6 +50,27 @@
 
 @stop
 
+
+@push('js')
+<script>
+function refreshCustomerLive(){
+    fetch("{{ route('customers.live', $customer) }}",{
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+    })
+    .then(r=>r.ok?r.json():null)
+    .then(data=>{
+        if(!data) return;
+        console.log('Customer Live',data);
+        // TODO: update widget _genieacs_live tanpa reload halaman.
+    })
+    .catch(console.error);
+}
+
+setInterval(refreshCustomerLive,30000);
+</script>
+@endpush
+
+
 @if(session('success'))
 
 <div class="alert alert-success alert-dismissible">

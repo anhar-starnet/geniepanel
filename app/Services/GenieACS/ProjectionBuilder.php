@@ -54,4 +54,21 @@ class ProjectionBuilder
 
         ];
     }
+
+    /**
+     * Projection ringan untuk monitoring realtime.
+     */
+    public static function monitoring(): array
+    {
+        return [
+            '_id',
+            '_lastInform',
+            '_tags',
+            'VirtualParameters.RXPower',
+            'VirtualParameters.gettemp',
+            'VirtualParameters.getdeviceuptime',
+            'VirtualParameters.pppoeIP',
+        ];
+    }
+
 }

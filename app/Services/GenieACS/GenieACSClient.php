@@ -34,6 +34,8 @@ class GenieACSClient
         $response = Http::timeout(
                 $this->timeout
             )
+            ->retry(2, 300)
+            ->retry(2, 300)
             ->acceptJson()
             ->get(
                 $this->baseUrl . $endpoint,

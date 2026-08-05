@@ -140,6 +140,28 @@ public function findById(
             ->values();
     }
 
+
+    /**
+     * Device yang sedang online.
+     */
+    public function online(): Collection
+    {
+        return $this->matched()
+            ->filter(fn ($row) => $row->device->isOnline())
+            ->values();
+    }
+
+    /**
+     * Device yang sedang offline.
+     */
+    public function offline(): Collection
+    {
+        return $this->matched()
+            ->reject(fn ($row) => $row->device->isOnline())
+            ->values();
+    }
+
+
     /**
      * Statistik dashboard.
      */

@@ -1,4 +1,4 @@
-<div class="card card-dark">
+<div id="genieacs-live-card" class="card card-dark">
     <div class="card-header">
         <h3 class="card-title">
             <i class="fas fa-chart-line"></i>
@@ -63,5 +63,14 @@
         </div>
 
         @endif
-    </div>
+    
+        <div class="card-footer text-right">
+            <small class="text-muted">
+                <i class="fas fa-sync-alt"></i>
+                Last Update:
+                <span id="live-last-update">{{ now()->format('H:i:s') }}</span>
+            </small>
+        </div>
+
+</div>
 </div>

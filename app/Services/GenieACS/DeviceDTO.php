@@ -335,4 +335,22 @@ class DeviceDTO
 
         };
     }
+
+    public function isHealthy(): bool
+    {
+        return $this->healthScore() >= 80;
+    }
+
+    public function summary(): array
+    {
+        return [
+            'online' => $this->isOnline(),
+            'health' => $this->healthScore(),
+            'rx' => $this->rxPower,
+            'temperature' => $this->temperature,
+            'uptime' => $this->uptime,
+            'lastInform' => $this->lastInform,
+        ];
+    }
+
 }

@@ -63,6 +63,8 @@ public function refresh(
     string $deviceId
 ): array {
 
+    $this->ensureExists($deviceId);
+
     return $this->client->refresh(
         $deviceId
     );
@@ -75,10 +77,21 @@ public function reboot(
     string $deviceId
 ): array {
 
+    $this->ensureExists($deviceId);
+
     return $this->client->reboot(
         $deviceId
     );
 }
+
+
+    private function ensureExists(string $deviceId): void
+    {
+        if (! $this->exists($deviceId)) {
+            throw new \InvalidArgumentException('Device tidak ditemukan.');
+        }
+    }
+
 
     /**
      * Ambil DeviceDTO.

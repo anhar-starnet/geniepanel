@@ -115,7 +115,7 @@ Route::post(
     [CustomerOntController::class, 'create']
 )->name('customers.assign-ont');
 
-Route::post(
+    Route::post(
     'customers/{customer}/assign-ont',
     [CustomerOntController::class, 'store']
 )->name('customers.assign-ont.store');
@@ -123,10 +123,14 @@ Route::post(
     'customers/{customer}/refresh',
     [CustomerController::class, 'refresh']
 )->name('customers.refresh');
-Route::post(
+    Route::post(
     'customers/{customer}/reboot',
     [CustomerController::class, 'reboot']
 )->name('customers.reboot');
+    Route::get(
+    'customers/{customer}/live',
+    [CustomerController::class, 'live']
+)->name('customers.live');
 
     Route::resource('customers', CustomerController::class);
 

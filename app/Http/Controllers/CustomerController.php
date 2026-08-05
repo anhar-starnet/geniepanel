@@ -13,6 +13,7 @@ use App\Services\Customer\SuspendCustomer;
 use App\Services\Customer\TerminateCustomer;
 use App\Services\GenieACS\DeviceLive;
 use App\Services\GenieACS\DeviceProvisioning;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -212,6 +213,18 @@ public function reboot(
         )
     );
 }
+
+
+    public function live(
+        Customer $customer
+    ): JsonResponse {
+
+        $customer->load('ont');
+
+        return response()->json(
+            $this->deviceLive->customer($customer)
+        );
+    }
 
     /**
      * Form edit

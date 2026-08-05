@@ -136,6 +136,8 @@ class DeviceLive
 
             'lastInformBadge' => $device->lastInformBadgeClass(),
 
+            'lastInformRaw' => $device->lastInform,
+
             'healthScore' => $device->healthScore(),
 
             'healthStatus' => $device->healthStatus(),
