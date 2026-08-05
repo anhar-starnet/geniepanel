@@ -348,17 +348,12 @@
 
             <div class="card-body text-center text-muted">
 
-                <h5>
-
-                    GenieACS Monitoring (Coming Soon)
-
-                </h5>
-
-                <p>
-
-                    Widget Online / Offline ONU akan tampil di sini.
-
-                </p>
+                <div class="row">
+                    <div class="col-md-3"><div class="small-box bg-success"><div class="inner"><h3>{{ $genieacsStats['online'] ?? 0 }}</h3><p>ONU Online</p></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-danger"><div class="inner"><h3>{{ $genieacsStats['offline'] ?? 0 }}</h3><p>ONU Offline</p></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-primary"><div class="inner"><h3>{{ $genieacsStats['assigned'] ?? 0 }}</h3><p>Assigned</p></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-warning"><div class="inner"><h3>{{ $genieacsStats['unassigned'] ?? 0 }}</h3><p>Unassigned</p></div></div></div>
+                </div>
 
             </div>
 
