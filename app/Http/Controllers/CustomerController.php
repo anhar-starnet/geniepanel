@@ -30,7 +30,7 @@ class CustomerController extends Controller
 ) {
 }
 
-    /**
+/**
  * Refresh parameter ONT dari GenieACS.
  */
 public function refresh(
@@ -56,11 +56,48 @@ public function refresh(
     }
 
     $this->deviceProvisioning->refresh(
-    $customer->ont->genieacs_device_id
-);
+        $customer->ont->genieacs_device_id
+    );
+
     return back()->with(
         'success',
         'Refresh task berhasil dikirim ke GenieACS.'
+    );
+
+}
+
+    /**
+ * Reboot ONT.
+ */
+public function reboot(
+    Customer $customer
+): RedirectResponse {
+
+    if (!$customer->ont) {
+
+        return back()->with(
+            'error',
+            'Customer belum memiliki ONT.'
+        );
+
+    }
+
+    if (!$customer->ont->genieacs_device_id) {
+
+        return back()->with(
+            'error',
+            'ONT belum terhubung ke GenieACS.'
+        );
+
+    }
+
+    $this->deviceProvisioning->reboot(
+        $customer->ont->genieacs_device_id
+    );
+
+    return back()->with(
+        'success',
+        'Task reboot berhasil dikirim ke GenieACS.'
     );
 
 }

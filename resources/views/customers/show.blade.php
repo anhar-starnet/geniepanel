@@ -50,6 +50,47 @@
 
 @stop
 
+@if(session('success'))
+
+<div class="alert alert-success alert-dismissible">
+
+    <button
+        type="button"
+        class="close"
+        data-dismiss="alert">
+
+        &times;
+
+    </button>
+
+    <i class="fas fa-check-circle"></i>
+
+    {{ session('success') }}
+
+</div>
+
+@endif
+
+@if(session('error'))
+
+<div class="alert alert-danger alert-dismissible">
+
+    <button
+        type="button"
+        class="close"
+        data-dismiss="alert">
+
+        &times;
+
+    </button>
+
+    <i class="fas fa-times-circle"></i>
+
+    {{ session('error') }}
+
+</div>
+
+@endif
 
 @section('content')
 
@@ -428,9 +469,23 @@
 
 </div>
 
+    <div class="card card-dark">
+
+    <div class="card-header">
+
+        <h3 class="card-title">
+
+            <i class="fas fa-bolt"></i>
+
+            Quick Actions
+
+        </h3>
+
+    </div>
+
     <div class="card-body">
 
-        <div class="btn-group">
+        <div class="btn-group flex-wrap">
 
     <a href="{{ route('customers.activate', $customer) }}"
        class="btn btn-success">
@@ -468,6 +523,33 @@
         Ganti ONT
 
     </a>
+
+    @if($customer->ont && $customer->ont->genieacs_device_id)
+
+<form action="{{ route('customers.refresh', $customer) }}"
+      method="POST"
+      class="d-inline">
+    @csrf
+
+    <button class="btn btn-primary">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+    </button>
+</form>
+
+<form action="{{ route('customers.reboot', $customer) }}"
+      method="POST"
+      class="d-inline"
+      onsubmit="return confirm('Reboot ONT sekarang?')">
+    @csrf
+
+    <button class="btn btn-warning">
+        <i class="fas fa-power-off"></i>
+        Reboot
+    </button>
+</form>
+
+@endif
 
 @else
 

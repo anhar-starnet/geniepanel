@@ -123,6 +123,10 @@ Route::post(
     'customers/{customer}/refresh',
     [CustomerController::class, 'refresh']
 )->name('customers.refresh');
+Route::post(
+    'customers/{customer}/reboot',
+    [CustomerController::class, 'reboot']
+)->name('customers.reboot');
 
     Route::resource('customers', CustomerController::class);
 

@@ -192,6 +192,7 @@ class GenieACSClient
         );
     }
 
+
     /**
      * Factory Reset
      */

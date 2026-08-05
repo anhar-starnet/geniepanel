@@ -81,7 +81,7 @@ public function reboot(
 }
 
 /**
- * Kirim task Factory Reset ke GenieACS.
+ * Factory Reset ONT.
  */
 public function factoryReset(
     string $deviceId
@@ -90,6 +90,7 @@ public function factoryReset(
     return $this->client->factoryReset(
         $deviceId
     );
+
 }
 
     /**
