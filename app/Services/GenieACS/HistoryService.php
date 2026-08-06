@@ -3,6 +3,7 @@
 namespace App\Services\GenieACS;
 
 use Illuminate\Support\Facades\DB;
+use App\Services\GenieACS\EventDetector;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use App\Models\DeviceHistory;
@@ -11,8 +12,9 @@ class HistoryService
 {
     protected Collection $latestHistory;
     public function __construct(
-        protected DeviceRepository $devices
-    ) {
+    protected DeviceRepository $devices,
+    protected EventDetector $detector
+) {
     }
 
     protected function hasChanged(DeviceDTO $device): bool
@@ -48,13 +50,6 @@ class HistoryService
     public function collect(): int
 {
     $this->latestHistory = DeviceHistory::query()
-    ->select(
-        'serial_number',
-        'online',
-        'rx_power',
-        'temperature',
-        'pppoe_ip'
-    )
     ->whereIn('id', function ($query) {
         $query->selectRaw('MAX(id)')
             ->from('device_history')
@@ -69,7 +64,16 @@ class HistoryService
         $device = $row->device;
 
         if ($this->hasChanged($device)) {
-    $rows[] = $this->buildRow($device);
+
+    $row = $this->buildRow($device);
+
+    $last = $this->latestHistory->get($device->serialNumber);
+
+    if ($last) {
+        $this->detector->detect($last, $row);
+    }
+
+    $rows[] = $row;
 }
 
         if (count($rows) >= 500) {
