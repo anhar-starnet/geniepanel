@@ -2,131 +2,108 @@
 
 namespace App\Services\GenieACS;
 
-use Illuminate\Support\Facades\DB;
-use App\Services\GenieACS\EventDetector;
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
 use App\Models\DeviceHistory;
+use App\Services\History\HistoryComparator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Services\History\HistoryWriter;
 
 class HistoryService
 {
     protected Collection $latestHistory;
+
     public function __construct(
-    protected DeviceRepository $devices,
-    protected EventDetector $detector
-) {
+        protected DeviceRepository $devices,
+        protected EventDetector $detector,
+        protected HistoryComparator $comparator,
+        protected HistoryWriter $writer,
+
+    ) {
     }
-
-    protected function hasChanged(DeviceDTO $device): bool
-{
-    $last = $this->latestHistory->get($device->serialNumber);
-
-    if (!$last) {
-        return true;
-    }
-
-    if ($last->online != $device->isOnline()) {
-        return true;
-    }
-
-    if (abs((float)$last->rx_power - $device->rxValue()) >= 0.5) {
-        return true;
-    }
-
-    if (abs((float)$last->temperature - $device->temperatureValue()) >= 1) {
-        return true;
-    }
-
-    if ($last->pppoe_ip != $device->pppoeIP) {
-        return true;
-    }
-
-    return false;
-}
 
     /**
      * Collect seluruh device.
      */
     public function collect(): int
-{
-    $this->latestHistory = DeviceHistory::query()
-    ->whereIn('id', function ($query) {
-        $query->selectRaw('MAX(id)')
-            ->from('device_history')
-            ->groupBy('serial_number');
-    })
-    ->get()
-    ->keyBy('serial_number');
-    $rows = [];
+    {
+        $this->latestHistory = DeviceHistory::query()
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('device_history')
+                    ->groupBy('serial_number');
+            })
+            ->get()
+            ->keyBy('serial_number');
 
-    foreach ($this->devices->matched() as $row) {
+        $rows = [];
 
-        $device = $row->device;
+        foreach ($this->devices->matched() as $item) {
 
-        if ($this->hasChanged($device)) {
+            $device = $item->device;
 
-    $row = $this->buildRow($device);
+            $last = $this->latestHistory->get($device->serialNumber);
 
-    $last = $this->latestHistory->get($device->serialNumber);
+            if (! $this->comparator->hasChanged($last, $device)) {
+                continue;
+            }
 
-    if ($last) {
-        $this->detector->detect($last, $row);
-    }
+            $row = $this->buildRow($device);
 
-    $rows[] = $row;
+            if ($last) {
+                $this->detector->detect($last, $row);
+            }
+
+            $rows[] = $row;
+
+            if (count($rows) >= 500) {
+    $this->writer->insert($rows);
 }
-
-        if (count($rows) >= 500) {
-            DeviceHistory::insert($rows);
-            $rows = [];
         }
+
+        $this->writer->insert($rows);
+
+        return $this->devices->matched()->count();
     }
 
-    if (! empty($rows)) {
-        DeviceHistory::insert($rows);
-    }
-
-    return $this->devices->matched()->count();
-}
-
+    /**
+     * Build snapshot.
+     */
     protected function buildRow(DeviceDTO $device): array
-{
-    return [
+    {
+        return [
 
-        'device_id'       => $device->id,
+            'device_id'      => $device->id,
 
-        'serial_number'   => $device->serialNumber,
+            'serial_number'  => $device->serialNumber,
 
-        'manufacturer'    => $device->manufacturer,
+            'manufacturer'   => $device->manufacturer,
 
-        'product_class'   => $device->productClass,
+            'product_class'  => $device->productClass,
 
-        'online'          => $device->isOnline(),
+            'online'         => $device->isOnline(),
 
-        'rx_power'        => $device->rxValue(),
+            'rx_power'       => $device->rxValue(),
 
-        'temperature'     => $device->temperatureValue(),
+            'temperature'    => $device->temperatureValue(),
 
-        'uptime'          => $device->uptime,
+            'uptime'         => $device->uptime,
 
-        'pppoe_username'  => $device->pppoeUsername,
+            'pppoe_username' => $device->pppoeUsername,
 
-        'pppoe_ip'        => $device->pppoeIP,
+            'pppoe_ip'       => $device->pppoeIP,
 
-        'last_inform' => $device->lastInform
-            ? \Carbon\Carbon::parse($device->lastInform)
-                ->setTimezone(config('app.timezone'))
-                ->toDateTimeString()
-            : null,
+            'last_inform'    => $device->lastInform
+                ? \Carbon\Carbon::parse($device->lastInform)
+                    ->setTimezone(config('app.timezone'))
+                    ->toDateTimeString()
+                : null,
 
-        'created_at' => now(),
+            'created_at'     => now(),
 
-        'updated_at' => now(),
+            'updated_at'     => now(),
+        ];
+    }
 
-    ];
-}
-
-    
     /**
      * Statistik history.
      */
@@ -145,12 +122,11 @@ class HistoryService
             'month' => DB::table('device_history')
                 ->where('created_at', '>=', now()->subDays(30))
                 ->count(),
-
         ];
     }
 
     /**
-     * Bersihkan data lama.
+     * Bersihkan history lama.
      */
     public function cleanup(int $days = 90): int
     {
@@ -166,8 +142,10 @@ class HistoryService
     /**
      * History satu device.
      */
-    public function history(string $serial, int $limit = 100): Collection
-    {
+    public function history(
+        string $serial,
+        int $limit = 100
+    ): Collection {
         return DB::table('device_history')
             ->where('serial_number', $serial)
             ->latest()

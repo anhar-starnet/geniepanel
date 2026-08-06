@@ -22,9 +22,11 @@ class DeviceEventRepository
      * Simpan event baru.
      */
     public function create(array $data): DeviceEvent
-    {
-        return DeviceEvent::create($data);
-    }
+{
+    \Log::info('REPOSITORY CREATE', $data);
+
+    return DeviceEvent::create($data);
+}
 
     /**
      * Jumlah event hari ini.

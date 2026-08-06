@@ -15,6 +15,7 @@ use App\Http\Controllers\OntController;
 use App\Http\Controllers\OntDeploymentController;
 use App\Http\Controllers\CustomerActivationController;
 use App\Http\Controllers\CustomerOntController;
+use App\Http\Controllers\EventController;
 /*
 |--------------------------------------------------------------------------
 | GenieACS
@@ -91,6 +92,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/live', function () {
         return response()->json(app(\App\Services\GenieACS\DeviceRepository::class)->statistics());
     })->name('dashboard.live');
+
+    Route::get('/admin/events', [EventController::class, 'index'])
+    ->middleware('auth')
+    ->name('admin.events');
 
 });
 
