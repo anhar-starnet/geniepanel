@@ -85,34 +85,46 @@ class DeviceHistoryRepository
     }
 
     /**
+ * Query snapshot terakhir setiap device.
+ */
+protected function latestDevices()
+{
+    return DeviceHistory::query()
+        ->whereIn('id', function ($query) {
+            $query->selectRaw('MAX(id)')
+                ->from('device_history')
+                ->groupBy('serial_number');
+        });
+}
+
+    /**
      * Ringkasan dashboard.
      */
     public function summary(): array
-    {
-        return [
+{
+    $latest = $this->latestDevices();
 
-            'today' => $this->todayCount(),
+    return [
 
-            'online' => DeviceHistory::online()
-                ->latest()
-                ->count(),
+        'today' => (clone $latest)->count(),
 
-            'offline' => DeviceHistory::offline()
-                ->latest()
-                ->count(),
+        'online' => (clone $latest)
+            ->where('online', true)
+            ->count(),
 
-            'rxCritical' => DeviceHistory::where(
-                'rx_power',
-                '<',
-                -30
-            )->count(),
+        'offline' => (clone $latest)
+            ->where('online', false)
+            ->count(),
 
-            'tempCritical' => DeviceHistory::where(
-                'temperature',
-                '>=',
-                80
-            )->count(),
+        'rxCritical' => (clone $latest)
+            ->where('rx_power', '<', -30)
+            ->count(),
 
-        ];
-    }
+        'tempCritical' => (clone $latest)
+            ->where('temperature', '>=', 80)
+            ->count(),
+
+    ];
+}
+
 }

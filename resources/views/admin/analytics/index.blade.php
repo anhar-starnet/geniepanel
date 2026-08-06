@@ -18,6 +18,6 @@
 
 @endsection
 
-@push('js')
-    @include('admin.analytics.partials.refresh')
-@endpush
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@include('admin.analytics.partials.refresh')

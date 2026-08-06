@@ -12,10 +12,11 @@
 
             <div class="card-body">
 
-                <canvas
-                    id="onlineChart"
-                    height="120">
-                </canvas>
+                <div style="height:320px">
+
+    <canvas id="onlineChart"></canvas>
+
+</div>
 
             </div>
 
@@ -44,7 +45,13 @@
                     <div class="progress">
                         <div
                             class="progress-bar bg-success"
-                            style="width:80%">
+                            style="width:
+{{ ($analytics['summary']['online'] /
+max(1,
+$analytics['summary']['online']
++
+$analytics['summary']['offline']))
+*100 }}%">
                         </div>
                     </div>
 
@@ -61,7 +68,13 @@
 
                         <div
                             class="progress-bar bg-danger"
-                            style="width:20%">
+                            style="width:
+{{ ($analytics['summary']['offline'] /
+max(1,
+$analytics['summary']['online']
++
+$analytics['summary']['offline']))
+*100 }}%">
                         </div>
 
                     </div>

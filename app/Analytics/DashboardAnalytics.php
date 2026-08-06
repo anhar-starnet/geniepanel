@@ -15,63 +15,38 @@ class DashboardAnalytics
      * Build seluruh data dashboard.
      */
     public function build(): array
-    {
-        return [
+{
+    $online = $this->history->onlineTrend();
 
-            /*
-            |--------------------------------------------------------------------------
-            | Summary
-            |--------------------------------------------------------------------------
-            */
+    $offline = $this->history->offlineTrend();
 
-            'summary' => $this->history->summary(),
+    return [
 
-            /*
-            |--------------------------------------------------------------------------
-            | Chart
-            |--------------------------------------------------------------------------
-            */
+        'summary' => $this->history->summary(),
 
-            'charts' => [
+        'charts' => [
 
-                'online' => $this->history->onlineTrend(),
+            'labels' => $online->pluck('hour'),
 
-                'offline' => $this->history->offlineTrend(),
+            'online' => $online->pluck('total'),
 
-            ],
+            'offline' => $offline->pluck('total'),
 
-            /*
-            |--------------------------------------------------------------------------
-            | Alarm
-            |--------------------------------------------------------------------------
-            */
+        ],
 
-            'alarm' => [
+        'alarm' => [
 
-                'rxCritical' => $this->history->rxCritical(),
+            'rxCritical' => $this->history->rxCritical(),
 
-                'temperatureCritical' => $this->history->temperatureCritical(),
+            'temperatureCritical' => $this->history->temperatureCritical(),
 
-            ],
+        ],
 
-            /*
-            |--------------------------------------------------------------------------
-            | History
-            |--------------------------------------------------------------------------
-            */
+        'today' => $this->history->todayCount(),
 
-            'today' => $this->history->todayCount(),
+        'topOffline' => $this->history->topOfflineDevices(),
 
-            /*
-            |--------------------------------------------------------------------------
-            | Top Offline
-            |--------------------------------------------------------------------------
-            */
+    ];
+}
 
-            'topOffline' =>
-
-                $this->history->topOfflineDevices(),
-
-        ];
-    }
 }
